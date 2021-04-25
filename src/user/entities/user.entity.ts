@@ -18,7 +18,7 @@ export class User {
   @Column('varchar', { name: 'lastname' })
   lastName: string;
 
-  @Column('datetime', { name: 'lastlogin' })
+  @Column('timestamp', { name: 'lastlogin' })
   lastLogin: Date;
 
   @Column('date')

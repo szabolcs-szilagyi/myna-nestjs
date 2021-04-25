@@ -15,10 +15,10 @@ export class CartEntity {
   @Column('varchar', { name: 'session_token' })
   sessionToken: string;
 
-  @Column('tinyint')
+  @Column('int')
   amount: number;
 
-  @Column('tinyint')
+  @Column('int')
   paid: number;
 
   @ManyToOne(type => ProductEntity, product => product.cartItems)

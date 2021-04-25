@@ -38,12 +38,8 @@ describe('CartController', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
-          type: 'mysql',
-          host: '127.0.0.1',
-          port: 3306,
-          username: 'myna_test',
-          password: 'test',
-          database: 'myna_test',
+          type: 'postgres',
+          url: process.env.DB_HOST || 'postgres://myna_test:test@127.0.0.1/myna_test',
           autoLoadEntities: true,
           synchronize: false,
         }),

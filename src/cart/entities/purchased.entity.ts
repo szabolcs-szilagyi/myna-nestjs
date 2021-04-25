@@ -11,6 +11,6 @@ export class PurchasedEntity {
   @Column('varchar', { name: 'session_token', length: 32 })
   sessionToken: string;
 
-  @Column('datetime')
+  @Column('timestamp')
   time: Date;
 }

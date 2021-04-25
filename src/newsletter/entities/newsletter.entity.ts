@@ -14,6 +14,6 @@ export class NewsletterEntity {
   @Column('date', { name: 'subscribe_date' })
   subscribeDate: Date;
 
-  @Column('tinyint')
+  @Column('int')
   enabled: number;
 }

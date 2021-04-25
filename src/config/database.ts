@@ -15,7 +15,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
 
   async createTypeOrmOptions(): Promise<TypeOrmModuleOptions> {
     const connectionManager: ConnectionManager = getConnectionManager();
-    const { url, synchronize } = this.dbConfig;
+    const { url, synchronize, dbSsl: ssl } = this.dbConfig;
     let options: any;
 
     if (connectionManager.has('default')) {
@@ -23,12 +23,13 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       await connectionManager.get('default').close();
     } else {
       options = {
-        type: 'mysql',
+        type: 'postgres',
         url,
         keepConnectionAlive: true,
         autoLoadEntities: true,
         synchronize,
-      };
+        ssl
+      } as TypeOrmModuleOptions;
     }
 
     return options;

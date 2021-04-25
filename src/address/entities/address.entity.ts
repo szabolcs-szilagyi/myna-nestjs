@@ -5,7 +5,7 @@ export class AddressEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('tinyint')
+  @Column('int')
   type: number;
 
   @Column('varchar')

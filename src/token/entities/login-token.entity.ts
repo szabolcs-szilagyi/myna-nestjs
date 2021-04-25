@@ -13,6 +13,6 @@ export class LoginToken {
   @Column('varchar', { name: 'login_token' })
   loginToken: string;
 
-  @Column('datetime', { name: 'create_time' })
+  @Column('timestamp', { name: 'create_time' })
   createTime: Date;
 }
