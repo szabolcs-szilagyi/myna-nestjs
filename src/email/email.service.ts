@@ -23,9 +23,9 @@ export class EmailService {
   constructor(
     private readonly configService: ConfigService,
   ) {
-      const config = this.configService.get('app');
-    this.host = config.host
-      this.senderEmail = config.senderEmail;
+    const config = this.configService.get('app');
+    this.host = config.frontEndHost;
+    this.senderEmail = config.senderEmail;
 
     this.client = new SESv2Client({
       region: config.awsRegion,
@@ -40,8 +40,8 @@ export class EmailService {
     const command = new SendEmailCommand({
       FromEmailAddress: `M Y N A <${this.senderEmail}>`,
       Destination: {
-        ToAddresses: ['szabolcs.szilagyi@gmx.com'],
-        // ToAddresses: [preparedEmail.to],
+        // ToAddresses: ['szabolcs.szilagyi@gmx.com'],
+        ToAddresses: [preparedEmail.to],
         // BccAddresses: [this.senderEmail],
       },
       Content: {

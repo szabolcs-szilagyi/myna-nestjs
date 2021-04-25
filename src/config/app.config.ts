@@ -9,9 +9,10 @@ const dbSsl = {
 }
 
 export const AppConfig = registerAs('app', () => ({
-  // senderEmail: 'connect@mynalabel.com',
-  senderEmail: 'szabolcs.szilagyi@gmx.com',
-  host: process.env.HOST || 'http://localhost:6000',
+  senderEmail: 'connect@mynalabel.com',
+  // senderEmail: 'szabolcs.szilagyi@gmx.com',
+  frontEndHost: process.env.HOST || `http://localhost:3000`,
+  host: process.env.HOST || `http://localhost:7000`,
   awsAccessKeyId: process.env.ACCESS_KEY_ID,
   awsSecretAccessKey: process.env.SECRET_ACCESS_KEY,
   awsRegion: 'eu-west-3',
