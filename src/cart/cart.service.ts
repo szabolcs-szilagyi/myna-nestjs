@@ -32,7 +32,7 @@ export class CartService {
       ...addToCartDto,
       sessionToken,
       amount: 1,
-      paid: 0,
+      paid: false,
     });
   }
 
@@ -101,7 +101,7 @@ export class CartService {
   }
 
   async getCartValue(sessionToken: string, coupon: string) {
-    const cartItems = await this.cartRepository.getItemsWithDetails(sessionToken, { paid: 0 });
+    const cartItems = await this.cartRepository.getItemsWithDetails(sessionToken, { paid: false });
     const productTotal = sumBy(cartItems, item => item.amount * item.product.price);
     const withCoupon = this.applyCoupon(productTotal, <Coupon>coupon);
 

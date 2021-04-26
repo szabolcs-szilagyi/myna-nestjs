@@ -159,7 +159,7 @@ describe('CartController', () => {
         })
         .expect(201, { success: '1' });
 
-      await cartRepo.update({ sessionToken, idName: 'second' }, { paid: 1 });
+      await cartRepo.update({ sessionToken, idName: 'second' }, { paid: true });
 
       await agent(app.getHttpServer())
         .get('/cart/products-in-cart')
@@ -227,7 +227,7 @@ describe('CartController', () => {
 
       expect(cartContent.length).toEqual(0);
       assert.match(rawCartContent, [
-        match({ sessionToken, paid: 1, idName: 'first2' }),
+        match({ sessionToken, paid: true, idName: 'first2' }),
       ]);
     });
 
@@ -327,7 +327,7 @@ describe('CartController', () => {
         amount: 2,
         idName: 'exist',
         size: 'onesize',
-        paid: 0,
+        paid: false,
         sessionToken,
       });
 
@@ -352,7 +352,7 @@ describe('CartController', () => {
         amount: 2,
         idName: 'exist',
         size: 'onesize',
-        paid: 0,
+        paid: false,
         sessionToken: '12312312434233e',
       });
 
@@ -386,7 +386,7 @@ describe('CartController', () => {
       await cartRepo.insert({
         amount: 2,
         idName: 'my-awesome-product',
-        paid: 0,
+        paid: false,
         sessionToken: 'asdfasdf',
         size: 's',
       });
@@ -416,7 +416,7 @@ describe('CartController', () => {
       await cartRepo.insert({
         amount: 4,
         idName: 'my-awesome-product',
-        paid: 0,
+        paid: false,
         sessionToken: 'asdfasdf',
         size: 's',
       });
@@ -446,7 +446,7 @@ describe('CartController', () => {
       await cartRepo.insert({
         amount: 2,
         idName: 'my-awesome-product',
-        paid: 0,
+        paid: false,
         sessionToken: 'asdfasdf',
         size: 's',
       });
@@ -478,14 +478,14 @@ describe('CartController', () => {
       await cartRepo.insert({
         amount: 2,
         idName: 'my-good-product',
-        paid: 0,
+        paid: false,
         sessionToken: 'asdfasdf',
         size: 's',
       });
       await cartRepo.insert({
         amount: 2,
         idName: 'my-good-product',
-        paid: 1,
+        paid: true,
         sessionToken: 'asdfasdf',
         size: 's',
       });
@@ -518,7 +518,7 @@ describe('CartController', () => {
       await cartRepo.insert({
         amount: 2,
         idName: 'my-awesome-product',
-        paid: 0,
+        paid: false,
         sessionToken,
         size: 's',
       });
@@ -552,7 +552,7 @@ describe('CartController', () => {
       await cartRepo.insert({
         amount: 1,
         idName: 'my-awesome-product',
-        paid: 0,
+        paid: false,
         sessionToken,
         size: 's',
       });

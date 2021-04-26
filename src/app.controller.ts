@@ -233,7 +233,7 @@ export class AppController {
             country: req.query.country,
             zip: req.query.zip,
             comment: req.query.comment,
-            type: 1,
+            type: true,
           }
         })
             .then(({ body }) => res.json({ success: (<any>body).success ? '1' : '0' }))
@@ -339,7 +339,7 @@ export class AppController {
                       size: product.size,
                       session_token: product.sessionToken,
                       amount: product.amount.toString(),
-                      paid: product.paid.toString(),
+                      paid: product.paid ? '1' : '0',
                     };
                     return memo;
                   },

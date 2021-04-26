@@ -1,4 +1,4 @@
-import { agent } from 'supertest';
+import * as supertest from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -56,7 +56,7 @@ describe('AddressController', () => {
 
   describe('GET shipping-info', () => {
     it('returns default text if no session available', () => {
-      return agent(app.getHttpServer())
+      return supertest(app.getHttpServer())
         .get('/address/shipping-info')
         .expect(200, { shippinginfo: 'Plus shipping fee' })
     });
@@ -73,7 +73,7 @@ describe('AddressController', () => {
 
       await addressRepo.insert({
         country: 'austria',
-        type: 1,
+        type: true,
         email,
         sessionToken,
         addressLine1: '',
@@ -85,7 +85,7 @@ describe('AddressController', () => {
         mobile: '',
       })
 
-      return agent(app.getHttpServer())
+      return supertest(app.getHttpServer())
         .get('/address/shipping-info')
         .set('session-token', sessionToken)
         .expect(200, { shippinginfo: 'incl. €10 shipping fee (EU)' });
@@ -103,7 +103,7 @@ describe('AddressController', () => {
 
       await addressRepo.insert({
         country: 'australia',
-        type: 1,
+        type: true,
         email,
         sessionToken,
         addressLine1: '',
@@ -115,7 +115,7 @@ describe('AddressController', () => {
         mobile: '',
       })
 
-      return agent(app.getHttpServer())
+      return supertest(app.getHttpServer())
         .get('/address/shipping-info')
         .set('session-token', sessionToken)
         .expect(200, { shippinginfo: 'incl. €25 shipping fee (Non-EU)' });
@@ -133,7 +133,7 @@ describe('AddressController', () => {
 
       await addressRepo.insert({
         country: 'poland',
-        type: 1,
+        type: true,
         email,
         sessionToken,
         addressLine1: '',
@@ -145,7 +145,7 @@ describe('AddressController', () => {
         mobile: '',
       })
 
-      return agent(app.getHttpServer())
+      return supertest(app.getHttpServer())
         .get('/address/shipping-info')
         .set('session-token', sessionToken)
         .expect(200, { shippinginfo: 'incl. free shipping' });
@@ -154,7 +154,7 @@ describe('AddressController', () => {
 
   describe('GET address-data', () => {
     it('should return default empty data', () => {
-      return agent(app.getHttpServer())
+      return supertest(app.getHttpServer())
         .get('/address/address-data')
         .expect(200, {});
     });
@@ -163,7 +163,7 @@ describe('AddressController', () => {
       const sessionToken = 'aaasdfasdfasdf';
       const email = 'heldxo@lldf.kl';
 
-      const addressData: AddressEntity = {
+      const addressData: Partial<AddressEntity> = {
         addressLine1: 'line 1',
         addressLine2: 'line 2',
         city: 'good city',
@@ -173,7 +173,7 @@ describe('AddressController', () => {
         mobile: '2342343243',
         name: 'helel lelel',
         sessionToken,
-        type: 1,
+        type: true,
         state: '',
         zip: '3242-23',
       }
@@ -181,12 +181,12 @@ describe('AddressController', () => {
       await sessionRepo.insert({ email, sessionToken, createTime: new Date() });
       await addressRepo.insert(addressData);
 
-      return agent(app.getHttpServer())
+      return supertest(app.getHttpServer())
+        .get('/address/address-data')
         .set('session-token', sessionToken)
         .set('email', email)
-        .get('/address/address-data')
         .expect(200, {
-          type: 1,
+          type: true,
           addressLine1: addressData.addressLine1,
           addressLine2: addressData.addressLine2,
           city: addressData.city,
@@ -201,7 +201,7 @@ describe('AddressController', () => {
 
   describe('POST address-data', () => {
     it('returns success false if details are not correct', () => {
-      return agent(app.getHttpServer())
+      return supertest(app.getHttpServer())
         .post('/address/address-data')
         .expect(201, { success: false });
     });
@@ -219,12 +219,12 @@ describe('AddressController', () => {
         state: '',
         comment: 'dog barks',
         zip: '123-123',
-        type: 1,
+        type: true,
       }
 
       await sessionRepo.insert({ email: addressData.email, sessionToken, createTime: new Date() });
 
-      return agent(app.getHttpServer())
+      return supertest(app.getHttpServer())
         .post('/address/address-data')
         .set('session-token', sessionToken)
         .send(addressData)
@@ -244,21 +244,21 @@ describe('AddressController', () => {
         state: '',
         comment: 'dog barks',
         zip: '123-123',
-        type: 1,
+        type: true,
       }
 
       await sessionRepo.insert({ email: addressData.email, sessionToken, createTime: new Date() });
 
-      await agent(app.getHttpServer())
+      await supertest(app.getHttpServer())
         .post('/address/address-data')
         .set('session-token', sessionToken)
         .send(addressData)
         .expect(201, { success: true });
 
-      return agent(app.getHttpServer())
+      return supertest(app.getHttpServer())
+        .get('/address/address-data')
         .set('session-token', sessionToken)
         .set('email', addressData.email)
-        .get('/address/address-data')
         .expect(200)
         .then(({ body }) => {
           assert.match(body, omit(['name', 'email', 'sessionToken'], addressData));

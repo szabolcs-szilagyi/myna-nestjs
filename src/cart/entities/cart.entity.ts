@@ -18,8 +18,8 @@ export class CartEntity {
   @Column('int')
   amount: number;
 
-  @Column('int')
-  paid: number;
+  @Column('boolean')
+  paid: boolean;
 
   @ManyToOne(type => ProductEntity, product => product.cartItems)
   @JoinColumn({ name: 'idname', referencedColumnName: 'idName' })

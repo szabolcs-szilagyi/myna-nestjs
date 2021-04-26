@@ -9,7 +9,7 @@ export class CartRepository extends Repository<CartEntity> {
    */
   async getProductsInCart(sessionToken: string): Promise<CartEntity[]> {
     const products = await this.find({
-      where: { sessionToken, paid: 0 },
+      where: { sessionToken, paid: false },
       order: { id: 'ASC' },
     });
 
@@ -17,7 +17,7 @@ export class CartRepository extends Repository<CartEntity> {
   }
 
   async setProductPaid(product: CartEntity): Promise<void> {
-    await this.update({ id: product.id }, { paid: 1 });
+    await this.update({ id: product.id }, { paid: true });
   }
 
   async getProductReservation(moreAccurateAvailablityDto: MoreAccurateAvailablityDto) {

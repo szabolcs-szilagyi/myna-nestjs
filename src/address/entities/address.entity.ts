@@ -5,8 +5,8 @@ export class AddressEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int')
-  type: number;
+  @Column('boolean')
+  type: boolean;
 
   @Column('varchar')
   email: string;

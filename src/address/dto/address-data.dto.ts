@@ -5,9 +5,7 @@ import { mildPurification } from "../../utils/mild-purification";
 
 export class AddressDataDto {
   @IsInt()
-  @Min(0)
-  @Max(1)
-  type: number;
+  type: boolean;
 
   @IsString()
   @Transform(({ value }) => emailPurification(value))
