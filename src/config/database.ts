@@ -15,7 +15,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
 
   async createTypeOrmOptions(): Promise<TypeOrmModuleOptions> {
     const connectionManager: ConnectionManager = getConnectionManager();
-    const { url, synchronize, dbSsl: ssl } = this.dbConfig;
+    const { dbUrl: url, synchronize, dbSsl: ssl } = this.dbConfig;
     let options: any;
 
     if (connectionManager.has('default')) {

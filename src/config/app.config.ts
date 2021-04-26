@@ -1,6 +1,12 @@
 import { registerAs } from "@nestjs/config";
 
-const { NODE_ENV } = process.env;
+const {
+  NODE_ENV = 'development',
+  EMAIL_SMTP_HOST = 'smtp.ethereal.email',
+  EMAIL_SMTP_PORT = '587',
+  EMAIL_SMTP_USER = 'trever.rau@ethereal.email',
+  EMAIL_SMTP_PASS = 'eWB9mfuvCtPspHzxy3',
+} = process.env;
 
 const dbSsl = {
     production: { rejectUnauthorized: false },
@@ -9,14 +15,20 @@ const dbSsl = {
 }
 
 export const AppConfig = registerAs('app', () => ({
-  senderEmail: 'connect@mynalabel.com',
-  // senderEmail: 'szabolcs.szilagyi@gmx.com',
-  frontEndHost: process.env.HOST || `http://localhost:3000`,
-  host: process.env.HOST || `http://localhost:7000`,
-  awsAccessKeyId: process.env.ACCESS_KEY_ID,
-  awsSecretAccessKey: process.env.SECRET_ACCESS_KEY,
-  awsRegion: 'eu-west-3',
-  url: process.env.DB_HOST || 'postgres://myna_dev:developer@127.0.0.1/myna_dev',
+  emailConfig:  {
+    senderEmail: 'connect@mynalabel.com',
+    smtp: {
+      host: EMAIL_SMTP_HOST,
+      port: parseInt(EMAIL_SMTP_PORT, 10),
+      auth: {
+        user: EMAIL_SMTP_USER,
+        pass: EMAIL_SMTP_PASS,
+      },
+    },
+  },
+  frontEndHost: process.env.HOST || 'http://localhost:3000',
+  host: process.env.HOST || 'http://localhost:7000',
+  dbUrl: process.env.DB_HOST || 'postgres://myna_dev:developer@127.0.0.1/myna_dev',
   dbSsl: dbSsl[NODE_ENV],
   synchronize: process.env.DB_SYNC === 'true' || false,
 }));

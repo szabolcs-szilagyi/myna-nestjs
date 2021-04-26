@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import {
-  SESv2Client,
-  SendEmailCommand
-} from '@aws-sdk/client-sesv2';
 import { PurchaseEmailDto } from './dto/purchase-email.dto';
 import { NewsletterSubscriptionEmailDto } from './dto/newsletter-subscription-email.dto';
 import { ConfigService } from '@nestjs/config';
+import { Transporter, createTransport } from 'nodemailer';
 
 type PreparedEmail = {
   to: string,
@@ -16,47 +13,29 @@ type PreparedEmail = {
 
 @Injectable()
 export class EmailService {
-  private readonly client: SESv2Client;
+  private readonly client: Transporter;
   private readonly host: string;
   private readonly senderEmail: string;
 
   constructor(
     private readonly configService: ConfigService,
   ) {
-    const config = this.configService.get('app');
+    const config = this.configService.get('app.emailConfig');
     this.host = config.frontEndHost;
     this.senderEmail = config.senderEmail;
 
-    this.client = new SESv2Client({
-      region: config.awsRegion,
-      credentials: {
-        accessKeyId: config.awsAccessKeyId,
-        secretAccessKey: config.awsSecretAccessKey,
-      },
-    });
+    this.client = createTransport(config.smtp);
   }
 
   private async sendEmail(preparedEmail: PreparedEmail): Promise<void> {
-    const command = new SendEmailCommand({
-      FromEmailAddress: `M Y N A <${this.senderEmail}>`,
-      Destination: {
-        // ToAddresses: ['szabolcs.szilagyi@gmx.com'],
-        ToAddresses: [preparedEmail.to],
-        // BccAddresses: [this.senderEmail],
-      },
-      Content: {
-        Simple: {
-          Subject: { Data: preparedEmail.subject, Charset: 'UTF-8', },
-          Body: {
-            Html: { Data: preparedEmail.htmlBody, Charset: 'UTF-8' },
-            Text: { Data: preparedEmail.textBody, Charset: 'UTF-8' },
-          },
-        },
-      },
-    });
-
     try {
-      await this.client.send(command);
+      await this.client.sendMail({
+        from: this.senderEmail,
+        to: preparedEmail.to,
+        subject: preparedEmail.subject,
+        text: preparedEmail.textBody,
+        html: preparedEmail.htmlBody,
+      });
     } catch(e) {
       console.log('Error in sending email:', e.message, 'data:', JSON.stringify(preparedEmail));
       throw e;
