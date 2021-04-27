@@ -26,9 +26,9 @@ export const AppConfig = registerAs('app', () => ({
       },
     },
   },
-  frontEndHost: process.env.HOST || 'http://localhost:3000',
+  frontEndHost: process.env.FRONTEND_HOST || 'http://localhost:3000',
   host: process.env.HOST || 'http://localhost:7000',
-  dbUrl: process.env.DB_HOST || 'postgres://myna_dev:developer@127.0.0.1/myna_dev',
+  dbUrl: process.env.DATABASE_URL || 'postgres://myna_dev:developer@127.0.0.1/myna_dev',
   dbSsl: dbSsl[NODE_ENV],
   synchronize: process.env.DB_SYNC === 'true' || false,
 }));

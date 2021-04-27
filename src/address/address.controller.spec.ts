@@ -23,7 +23,7 @@ describe('AddressController', () => {
       imports: [
         TypeOrmModule.forRoot({
           type: 'postgres',
-          url: process.env.DB_HOST || 'postgres://myna_test:test@127.0.0.1/myna_test',
+          url: 'postgres://myna_test:test@127.0.0.1/myna_test',
           autoLoadEntities: true,
           synchronize: false,
         }),
