@@ -84,7 +84,7 @@ export class TokenService {
     const email = 'nodata';
     const sessionToken = this.generateSessionToken(now);
 
-    this.sessionTokenRepository.insert({
+    await this.sessionTokenRepository.insert({
       email,
       sessionToken,
       createTime: now,
