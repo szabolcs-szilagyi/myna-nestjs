@@ -20,7 +20,7 @@ export class CartRepository extends Repository<CartEntity> {
     await this.update({ id: product.id }, { paid: true });
   }
 
-  async getProductReservation(moreAccurateAvailablityDto: MoreAccurateAvailablityDto) {
+  getProductReservation(moreAccurateAvailablityDto: MoreAccurateAvailablityDto) {
     const { sessionToken, idName, size } = moreAccurateAvailablityDto;
     return this.find({ sessionToken, idName, size: size === 'oneSize' ? 'onesize': size })
   }

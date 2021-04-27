@@ -43,9 +43,7 @@ describe('TokenController', () => {
     sessionRepo = app.get(SessionTokenRepository) as SessionTokenRepository;
   });
 
-  afterAll(async () => {
-    await app.close();
-  });
+  afterAll(() => app.close());
 
   beforeEach(async () => {
     await sessionRepo.delete({});

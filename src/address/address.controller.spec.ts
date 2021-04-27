@@ -52,7 +52,7 @@ describe('AddressController', () => {
     await addressRepo.delete({});
   })
 
-  afterAll(async () => app.close());
+  afterAll(() => app.close());
 
   describe('GET shipping-info', () => {
     it('returns default text if no session available', () => {

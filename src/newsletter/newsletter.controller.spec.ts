@@ -50,7 +50,7 @@ describe('NewsletterController', () => {
     await newsletterRepo.delete({});
   })
 
-  afterAll(async () => app.close());
+  afterAll(() => app.close());
 
   describe('POST subscribe', () => {
     it('records news subscription', async () => {
