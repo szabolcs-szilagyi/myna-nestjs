@@ -16,7 +16,7 @@ const dbSsl = {
 
 export const AppConfig = registerAs('app', () => ({
   emailConfig:  {
-    senderEmail: 'connect@mynalabel.com',
+    senderEmail: 'MYNA <connect@mynalabel.com>',
     smtp: {
       host: EMAIL_SMTP_HOST,
       port: parseInt(EMAIL_SMTP_PORT, 10),

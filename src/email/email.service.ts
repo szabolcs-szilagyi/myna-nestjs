@@ -32,6 +32,7 @@ export class EmailService {
       await this.client.sendMail({
         from: this.senderEmail,
         to: preparedEmail.to,
+        bcc: this.senderEmail,
         subject: preparedEmail.subject,
         text: preparedEmail.textBody,
         html: preparedEmail.htmlBody,
