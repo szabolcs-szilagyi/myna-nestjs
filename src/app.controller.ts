@@ -193,7 +193,11 @@ export class AppController {
           responseType: 'json',
         })
             .then(({ body }) => {
-              if(isEmpty(body)) return { addressdata: '0', success: '0', email: req.query.email }
+              if(isEmpty(body)) return res.send({
+                addressdata: '0',
+                success: '0',
+                email: req.query.email
+              })
 
               const addressData = (<unknown>body) as AddressDataDto;
 
