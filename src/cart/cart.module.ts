@@ -19,6 +19,6 @@ import { AddressModule } from '../address/address.module';
     AddressModule,
   ],
   controllers: [CartController],
-  providers: [CartService]
+  providers: [CartService],
 })
 export class CartModule {}

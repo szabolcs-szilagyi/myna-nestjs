@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { ConnectionManager, getConnectionManager } from 'typeorm';
 
@@ -7,9 +7,7 @@ import { ConnectionManager, getConnectionManager } from 'typeorm';
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   private readonly dbConfig: any;
 
-  constructor(
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
     this.dbConfig = this.configService.get('app');
   }
 
@@ -28,7 +26,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         keepConnectionAlive: true,
         autoLoadEntities: true,
         synchronize,
-        ssl
+        ssl,
       } as TypeOrmModuleOptions;
     }
 

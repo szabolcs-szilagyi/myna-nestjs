@@ -4,14 +4,10 @@ import { EmailService } from './email.service';
 
 @Controller('email')
 export class EmailController {
-  constructor(
-    private readonly emailService: EmailService,
-  ) {}
+  constructor(private readonly emailService: EmailService) {}
 
   @Post()
-  sendPurchaseEmail(
-    @Body() purchaseEmailDto: PurchaseEmailDto,
-  ): Promise<void> {
+  sendPurchaseEmail(@Body() purchaseEmailDto: PurchaseEmailDto): Promise<void> {
     return this.emailService.sendPurchaseEmail(purchaseEmailDto);
   }
 }

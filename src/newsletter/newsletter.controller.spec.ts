@@ -22,15 +22,11 @@ describe('NewsletterController', () => {
           autoLoadEntities: true,
           synchronize: false,
         }),
-        TypeOrmModule.forFeature([
-          NewsletterRepository
-        ]),
+        TypeOrmModule.forFeature([NewsletterRepository]),
         EmailModule,
       ],
       controllers: [NewsletterController],
-      providers: [
-        NewsletterService,
-      ],
+      providers: [NewsletterService],
     })
       .overrideProvider(EmailService)
       .useValue({
@@ -48,7 +44,7 @@ describe('NewsletterController', () => {
 
   beforeEach(async () => {
     await newsletterRepo.delete({});
-  })
+  });
 
   afterAll(() => app.close());
 
@@ -58,7 +54,9 @@ describe('NewsletterController', () => {
         .post('/newsletter/subscribe')
         .send({ email: 'hello@123.hu' })
         .expect(201)
-        .then(({ body }) => assert.match(body, { success: '1', token: match.string }));
+        .then(({ body }) =>
+          assert.match(body, { success: '1', token: match.string }),
+        );
     });
 
     it('will not register the same e-mail again', async () => {
@@ -66,7 +64,9 @@ describe('NewsletterController', () => {
         .post('/newsletter/subscribe')
         .send({ email: 'hello@123.hu' })
         .expect(201)
-        .then(({ body }) => assert.match(body, { success: '1', token: match.string }));
+        .then(({ body }) =>
+          assert.match(body, { success: '1', token: match.string }),
+        );
 
       return agent(app.getHttpServer())
         .post('/newsletter/subscribe')
@@ -78,9 +78,7 @@ describe('NewsletterController', () => {
 
   describe('GET confirm', () => {
     it('should be resistent', async () => {
-      return agent(app.getHttpServer())
-        .get('/newsletter/confirm')
-        .expect(400);
+      return agent(app.getHttpServer()).get('/newsletter/confirm').expect(400);
     });
 
     it('should return OK if manages to activate', async () => {
@@ -88,7 +86,7 @@ describe('NewsletterController', () => {
         .post('/newsletter/subscribe')
         .send({ email: 'hello@123123123.hu' })
         .expect(201)
-        .then(({ body }) => (body.token));
+        .then(({ body }) => body.token);
 
       return agent(app.getHttpServer())
         .get('/newsletter/confirm')
@@ -102,7 +100,7 @@ describe('NewsletterController', () => {
         .query({ token: 'no such thing' })
         .expect(404);
     });
-  })
+  });
 
   describe('GET unsubscribe', () => {
     it('should expect proper parameters', async () => {
@@ -117,7 +115,7 @@ describe('NewsletterController', () => {
         .post('/newsletter/subscribe')
         .send({ email })
         .expect(201)
-        .then(({ body }) => (body.token));
+        .then(({ body }) => body.token);
 
       await agent(app.getHttpServer())
         .get('/newsletter/unsubscribe')
@@ -128,5 +126,5 @@ describe('NewsletterController', () => {
 
       expect(subscriptionRecord?.id).toBeUndefined();
     });
-  })
+  });
 });

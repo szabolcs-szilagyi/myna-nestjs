@@ -1,8 +1,14 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { CartEntity } from "../../cart/entities/cart.entity";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { CartEntity } from '../../cart/entities/cart.entity';
 
 @Entity({
-  name: 'products'
+  name: 'products',
 })
 export class ProductEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -59,6 +65,6 @@ export class ProductEntity extends BaseEntity {
   @Column('varchar')
   pic9: string;
 
-  @OneToMany(() => CartEntity, cartItems => cartItems.idName)
+  @OneToMany(() => CartEntity, (cartItems) => cartItems.idName)
   cartItems: CartEntity[];
 }

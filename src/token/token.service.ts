@@ -18,15 +18,17 @@ export class TokenService {
   ) {}
 
   private getNow(): string {
-    const now = DateTime
-      .fromISO(new Date().toISOString(), { zone: 'Europe/London' })
-      .toFormat('yyyy-MM-dd HH:mm:ss');
+    const now = DateTime.fromISO(new Date().toISOString(), {
+      zone: 'Europe/London',
+    }).toFormat('yyyy-MM-dd HH:mm:ss');
 
     return now;
   }
 
   private generateSessionToken(now: string): MD5Hash {
-    const toHash = [randomInt(10000, 99999), now, randomInt(10000, 99999)].join('')
+    const toHash = [randomInt(10000, 99999), now, randomInt(10000, 99999)].join(
+      '',
+    );
     const sessionToken = createHash('md5').update(toHash).digest('hex');
 
     return sessionToken;
@@ -35,14 +37,14 @@ export class TokenService {
   async getLoginToken(email: string): Promise<MD5Hash> {
     const now = this.getNow();
 
-    const toHash = [email, now, randomInt(10000, 99999)].join('')
+    const toHash = [email, now, randomInt(10000, 99999)].join('');
     const hash = createHash('md5').update(toHash).digest('hex');
 
     await this.loginTokenRepository.insert({
       email,
       loginToken: hash,
       createTime: now,
-    })
+    });
 
     return hash;
   }
@@ -75,7 +77,7 @@ export class TokenService {
   }
 
   setEmailToSession(email: string, sessionToken: string): Promise<any> {
-    return this.sessionTokenRepository.update({ sessionToken }, { email })
+    return this.sessionTokenRepository.update({ sessionToken }, { email });
   }
 
   async setSessionToken(): Promise<string> {
@@ -88,17 +90,20 @@ export class TokenService {
       email,
       sessionToken,
       createTime: now,
-    })
+    });
 
     return sessionToken;
   }
 
   async fakeExtendSession(sessionToken: string): Promise<void> {
-    const now = DateTime
-      .fromISO(new Date().toISOString(), { zone: 'Europe/London' })
-      .toFormat('yyyy-MM-dd HH:mm:ss');
+    const now = DateTime.fromISO(new Date().toISOString(), {
+      zone: 'Europe/London',
+    }).toFormat('yyyy-MM-dd HH:mm:ss');
 
-    await this.sessionTokenRepository.update({ sessionToken }, { createTime: now });
+    await this.sessionTokenRepository.update(
+      { sessionToken },
+      { createTime: now },
+    );
   }
 
   async deleteSession(sessionToken: string): Promise<void> {
@@ -106,7 +111,10 @@ export class TokenService {
   }
 
   async getEmailBySessionToken(sessionToken: string): Promise<email> {
-    const tokenRecord = await this.sessionTokenRepository.findOne({ sessionToken }, { select: ['email'] })
+    const tokenRecord = await this.sessionTokenRepository.findOne(
+      { sessionToken },
+      { select: ['email'] },
+    );
     return tokenRecord?.email;
   }
 }

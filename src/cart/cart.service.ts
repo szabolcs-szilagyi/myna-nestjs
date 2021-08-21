@@ -26,7 +26,7 @@ export class CartService {
 
   async addProductToCart(
     addToCartDto: AddToCartDto,
-    sessionToken: string
+    sessionToken: string,
   ): Promise<void> {
     await this.cartRepository.insert({
       ...addToCartDto,
@@ -45,7 +45,7 @@ export class CartService {
 
     const reduction = validCoupons?.[coupon];
 
-    if(reduction !== undefined) {
+    if (reduction !== undefined) {
       return price * reduction;
     } else {
       return price;
@@ -53,7 +53,7 @@ export class CartService {
   }
 
   async removeProductFromCart(id: number, sessionToken: string): Promise<void> {
-    await this.cartRepository.delete({ id, sessionToken })
+    await this.cartRepository.delete({ id, sessionToken });
   }
 
   getProductsInCart(sessionToken: string) {
@@ -68,17 +68,19 @@ export class CartService {
 
     const cartRepo = queryRunner.manager.getCustomRepository(CartRepository);
     const stockRepo = queryRunner.manager.getCustomRepository(StockRepository);
-    const purchasedRepo = queryRunner.manager.getCustomRepository(PurchasedRepository);
+    const purchasedRepo = queryRunner.manager.getCustomRepository(
+      PurchasedRepository,
+    );
     try {
       const products = await cartRepo.getProductsInCart(sessionToken);
-      for(const product of products) {
+      for (const product of products) {
         await stockRepo.reduceStock(product.idName, product.size);
         await cartRepo.setProductPaid(product);
       }
       await purchasedRepo.insert({ email, sessionToken, time: new Date() });
 
       await queryRunner.commitTransaction();
-    } catch(e) {
+    } catch (e) {
       console.log(e);
       await queryRunner.rollbackTransaction();
     } finally {
@@ -92,9 +94,15 @@ export class CartService {
     return this.stockRepository.getAvailability(idName);
   }
 
-  async getMoreAccurateAvailability(moreAccurateAvailablityDto: MoreAccurateAvailablityDto) {
-    const available = await this.getAvailability(moreAccurateAvailablityDto.idName);
-    const reserved = await this.cartRepository.getProductReservation(moreAccurateAvailablityDto);
+  async getMoreAccurateAvailability(
+    moreAccurateAvailablityDto: MoreAccurateAvailablityDto,
+  ) {
+    const available = await this.getAvailability(
+      moreAccurateAvailablityDto.idName,
+    );
+    const reserved = await this.cartRepository.getProductReservation(
+      moreAccurateAvailablityDto,
+    );
 
     const reservationSum = sumBy(reserved, 'amount');
 
@@ -102,8 +110,14 @@ export class CartService {
   }
 
   async getCartValue(sessionToken: string, coupon: string) {
-    const cartItems = await this.cartRepository.getItemsWithDetails(sessionToken, { paid: false });
-    const productTotal = sumBy(cartItems, item => item.amount * item.product.price);
+    const cartItems = await this.cartRepository.getItemsWithDetails(
+      sessionToken,
+      { paid: false },
+    );
+    const productTotal = sumBy(
+      cartItems,
+      (item) => item.amount * item.product.price,
+    );
     const withCoupon = this.applyCoupon(productTotal, <Coupon>coupon);
 
     return withCoupon;

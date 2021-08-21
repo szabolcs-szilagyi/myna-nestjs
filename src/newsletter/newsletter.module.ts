@@ -6,11 +6,8 @@ import { NewsletterRepository } from './newsletter.repository';
 import { EmailModule } from '../email/email.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([NewsletterRepository]),
-    EmailModule,
-  ],
+  imports: [TypeOrmModule.forFeature([NewsletterRepository]), EmailModule],
   controllers: [NewsletterController],
-  providers: [NewsletterService]
+  providers: [NewsletterService],
 })
 export class NewsletterModule {}

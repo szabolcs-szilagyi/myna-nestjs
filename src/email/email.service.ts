@@ -5,10 +5,10 @@ import { ConfigService } from '@nestjs/config';
 import { Transporter, createTransport } from 'nodemailer';
 
 type PreparedEmail = {
-  to: string,
-  subject: string,
-  textBody: string,
-  htmlBody: string,
+  to: string;
+  subject: string;
+  textBody: string;
+  htmlBody: string;
 };
 
 @Injectable()
@@ -17,9 +17,7 @@ export class EmailService {
   private readonly host: string;
   private readonly senderEmail: string;
 
-  constructor(
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
     const config = this.configService.get('app.emailConfig');
     this.host = config.frontEndHost;
     this.senderEmail = config.senderEmail;
@@ -37,21 +35,27 @@ export class EmailService {
         text: preparedEmail.textBody,
         html: preparedEmail.htmlBody,
       });
-    } catch(e) {
-      console.log('Error in sending email:', e.message, 'data:', JSON.stringify(preparedEmail));
+    } catch (e) {
+      console.log(
+        'Error in sending email:',
+        e.message,
+        'data:',
+        JSON.stringify(preparedEmail),
+      );
       throw e;
     }
   }
 
   async sendPurchaseEmail(purchaseEmailDto: PurchaseEmailDto) {
     const subject = 'New Order';
-    const { textBody, htmlBody } = Object
-      .entries(purchaseEmailDto)
-      .reduce((memo, [key, value]) => {
+    const { textBody, htmlBody } = Object.entries(purchaseEmailDto).reduce(
+      (memo, [key, value]) => {
         memo.textBody += `${key}: ${value}\r\n\r\n`;
         memo.htmlBody += `${key}: ${value}<br />`;
         return memo;
-      }, { textBody: '', htmlBody: '' });
+      },
+      { textBody: '', htmlBody: '' },
+    );
 
     const preparedEmail = {
       to: purchaseEmailDto.customerEmail,
@@ -63,7 +67,9 @@ export class EmailService {
     await this.sendEmail(preparedEmail);
   }
 
-  async sendNewsletterConfirmationEmail(newsletterSubscriptionEmailDto: NewsletterSubscriptionEmailDto) {
+  async sendNewsletterConfirmationEmail(
+    newsletterSubscriptionEmailDto: NewsletterSubscriptionEmailDto,
+  ) {
     const { email, token } = newsletterSubscriptionEmailDto;
     const preparedEmail = {
       to: email,
@@ -78,7 +84,9 @@ export class EmailService {
     await this.sendEmail(preparedEmail);
   }
 
-  async sendSubscribedEmail(newsletterSubscriptionEmailDto: NewsletterSubscriptionEmailDto) {
+  async sendSubscribedEmail(
+    newsletterSubscriptionEmailDto: NewsletterSubscriptionEmailDto,
+  ) {
     const { email, token } = newsletterSubscriptionEmailDto;
     const preparedEmail = {
       to: email,
@@ -93,12 +101,15 @@ export class EmailService {
     await this.sendEmail(preparedEmail);
   }
 
-  async sendUnsubscribedEmail(newsletterSubscriptionEmailDto: NewsletterSubscriptionEmailDto) {
+  async sendUnsubscribedEmail(
+    newsletterSubscriptionEmailDto: NewsletterSubscriptionEmailDto,
+  ) {
     const preparedEmail = {
       to: newsletterSubscriptionEmailDto.email,
       subject: 'Unsubscribed',
       textBody: 'You have successfully unsubscribed from our newsletters!',
-      htmlBody: '<p>You have successfully unsubscribed from our newsletters!</p>',
+      htmlBody:
+        '<p>You have successfully unsubscribed from our newsletters!</p>',
     } as PreparedEmail;
 
     await this.sendEmail(preparedEmail);

@@ -6,10 +6,7 @@ import { AddressRepository } from './address.repository';
 import { TokenModule } from '../token/token.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([AddressRepository]),
-    TokenModule,
-  ],
+  imports: [TypeOrmModule.forFeature([AddressRepository]), TokenModule],
   providers: [AddressService],
   controllers: [AddressController],
   exports: [AddressService],

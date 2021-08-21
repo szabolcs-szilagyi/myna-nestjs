@@ -5,9 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppConfig } from '../config/app.config';
 
 @Module({
-  imports: [
-    ConfigModule.forFeature(AppConfig),
-  ],
+  imports: [ConfigModule.forFeature(AppConfig)],
   providers: [EmailService],
   exports: [EmailService],
   controllers: [EmailController],
