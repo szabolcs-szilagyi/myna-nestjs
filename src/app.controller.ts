@@ -84,10 +84,13 @@ export class AppController {
             const productdetails = {
               id: product.id,
               productname: product.name,
+              namePl: product.namePl,
               productcolor: product.color,
               productprice: product.price,
               desclong: product.description,
+              descriptionPl: product.descriptionPl,
               compcare: product.compCare,
+              compositionAndCarePl: product.compositionAndCarePl,
               availability: product.availability,
               is_one_size: product.isOneSize,
               pic1: product.pic1,
