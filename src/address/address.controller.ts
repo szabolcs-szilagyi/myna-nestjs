@@ -5,7 +5,7 @@ import { EmailStripperPipe } from '../token/pipes/email-stripper.pipe';
 import { TokenService } from '../token/token.service';
 import { AddressService } from './address.service';
 import { AddressEntity } from './entities/address.entity';
-import * as lodash from 'lodash/fp';
+import omit from 'lodash.omit';
 import { AddressDataDto } from './dto/address-data.dto';
 
 @Controller('address')
@@ -41,9 +41,9 @@ export class AddressController {
       'id' | 'sessionToken' | 'email' | 'name'
     >;
     if (isSessionValid) {
-      addressData = lodash.omit(
-        ['id', 'sessionToken', 'email', 'name'],
+      addressData = omit(
         await this.addressService.getAddressDataByEmail(email),
+        ['id', 'sessionToken', 'email', 'name'],
       );
     } else {
       addressData = {} as AddressEntity;

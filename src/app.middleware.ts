@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { omit } from 'lodash/fp';
+import omit from 'lodash.omit';
 
 /**
  * NextJS' catch all api declaration will add a `catchAll` parameter with
@@ -15,7 +15,7 @@ export function catchAllOmiter(
   res: Response,
   next: NextFunction,
 ) {
-  req.query = omit('catchAll', req.query);
+  req.query = omit(req.query, 'catchAll');
 
   next();
 }
