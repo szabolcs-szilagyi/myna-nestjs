@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import omit from 'lodash.omit';
+import { omit } from 'lodash/fp';
 import { UserRepository } from './user.repository';
 import { DateTime } from 'luxon';
 import { UserDataDto } from './dto/user-data.dto';
@@ -46,7 +46,7 @@ export class UserService {
   async getUserData(email: string): Promise<UserDataDto> {
     const userRecord = await this.userRepository.findOne({ email });
 
-    return omit(userRecord, ['id']) as UserDataDto;
+    return omit(['id'], userRecord) as UserDataDto;
   }
 
   async updateUserData(userDataDto: UserDataDto): Promise<void> {

@@ -11,7 +11,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
 import got from 'got';
-import isEmpty from 'lodash.isempty';
+import { isEmpty } from 'lodash';
 import { AddressDataDto } from './address/dto/address-data.dto';
 import { AddToCartDto } from './cart/dto/add-to-cart.dto';
 import { CartEntity } from './cart/entities/cart.entity';

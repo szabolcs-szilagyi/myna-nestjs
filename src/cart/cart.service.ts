@@ -7,7 +7,7 @@ import { StockRepository } from './stock.repository';
 import { PurchasedRepository } from './purchased.repository';
 import { StockEntity } from './entities/stock.entity';
 import { MoreAccurateAvailablityDto } from './dto/more-accurate-availablity.dto';
-import sumBy from 'lodash.sumby';
+import { sumBy } from 'lodash';
 
 type Coupon = 'mynafriend10' | 'mynagift15' | 'thespecial20';
 

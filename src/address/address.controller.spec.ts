@@ -11,7 +11,7 @@ import { SessionTokenRepository } from '../token/session-token.repository';
 import { AddressEntity } from './entities/address.entity';
 import { AddressDataDto } from './dto/address-data.dto';
 import { assert } from 'sinon';
-import omit from 'lodash.omit';
+import { omit } from 'lodash/fp';
 
 describe('AddressController', () => {
   let app: INestApplication;
@@ -267,7 +267,7 @@ describe('AddressController', () => {
         .then(({ body }) => {
           assert.match(
             body,
-            omit(addressData, ['name', 'email', 'sessionToken']),
+            omit(['name', 'email', 'sessionToken'], addressData),
           );
         });
     });
