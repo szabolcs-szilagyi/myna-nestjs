@@ -358,6 +358,28 @@ INSERT INTO public.products (idname, availability, is_one_size, productname, pro
      'HELEN Marynarka',
      '<div class="ju">Z kolekcji Consciously beautiful, wykonana z bawełny organicznej i włókna lotosu, stworzona przez wspierane kobiety z Kambodży. Szukasz idealnego ubrania, które jest ponadczasowe i nigdy nie wychodzi z mody? Możesz być pewien, że marynarka HELEN będzie Twoim ukochanym elementem Twojej garderoby. Niesamowita tkanina, piękny kobiecy design dotrzyma towarzystwa wszystkim podstawom ułożonym pod spodem. Wyrafinowany w klasycznym i wygodnym stylu. Ukochana! Dodatkowo nasza marynarka HELEN posiada nadające się do użytku dwie kieszenie z przodu. To nie wszystko, bo fason dodatkowo wysmukli i podkreśli sylwetkę dzięki naszemu wzorowi. Dodatkowo do HELEN dołączyłamy najpiękniejszą ręcznie wykonaną różę z tego samego materiału, którą w każdej chwili możesz odpiąć.</div>',
      '<div class="ju">95% bawełna i 5% włókna kwiata lotusa, pięknie tkana tkanina, przy użyciu naturalnych barwników, nie atestowana. Unikalne i ręcznie tkane przez kobiety w Kambodży. Prać w delikatnym cyklu w 30 stopniach Celsjusza, prasować na niskim poziomie i nie suszyć w suszarce. Nasze tkaniny są trwałe i nie wymagają czyszczenia na sucho.</div>'
+   ),
+   (
+     'peri-sis-handkerchief',
+     'Available',
+     true,
+     'PERI SIS Handkerchief',
+     'Dusty Rose',
+     27,
+     '<div class="ju">PERI SIS handkerchief is a cute accent to the whole set. Finished with a cord of embroidery imitating the pearls of the beautiful plant String of Pearls. PERI SIS delights with its sensuality and delicacy, it will fit perfectly wrapted around your hand, neck or even as a addition  to your pocket as a styling accessory.<br /><br />Combine with the PERI blouse for a unique, monochrome look or with the REEVA jacket for a refreshing style. Made with care in Poland.<br /><br />PERI SIS handkerchief is made to order and can work 1-2 weeks before being hand sewn with care in Poland.</div>',
+     '<div class="ju">100% organic cotton voile, GOTS certified, made in Turkey. Wash on delicate cycle at 30 celsius degrees, iron at low setting and do not tumble dry. Our fabrics are sustainable and do not require dry cleaning.</div>',
+     'peri-sis-handkerchief-01.jpg',
+     'peri-sis-handkerchief-02.jpg',
+     'peri-sis-handkerchief-03.jpg',
+     'peri-sis-handkerchief-04.jpg',
+     NULL,
+     NULL,
+     NULL,
+     NULL,
+     NULL,
+     'PERI SIS Chusteczka',
+     '<div class="ju">Chusteczka PERI SIS jest ciekawym dopełnieniem do całości zestawu . Wykończona ręcznie haftem imitujący sznur perełek orginalnej rośliny Starzec Rowleya. PERI SIS zachwyca swoja zmysłowością i delikatnością, doskonale wkomponuje się przwiązana we włosy, na dłoni, szyji lub nawet w kieszeni jako dodatkowy detal stylizacji.<br /><br />Połącz z bluzka PERI aby uzyskać wyjątkowy, monochromatyczny wygląd lub z kurtka REEVA odświeżajac styl . Wykonana z dbałością w Polsce.<br /><br />PERI SIS chusteczka jest szyta i haftowana na zamówienie i może zająć 1-2 tygodnie, zanim zostanie ręcznie uszyta z dbałoscią w Polsce.</div>',
+     '<div class="ju">100% woal z bawełny organicznej, z certyfikatem GOTS, wyprodukowany w Turcji. Prać w delikatnym cyklu w 30 stopniach, prasować na niskich obrotach i nie suszyć w suszarce.</div>'
    )
    ON CONFLICT (idname) DO UPDATE SET
    availability            = EXCLUDED.availability,
@@ -382,29 +404,31 @@ INSERT INTO public.products (idname, availability, is_one_size, productname, pro
    ;
 
 
-INSERT INTO public.stock (idname, xs, s, m, ml, l) VALUES
- ('tuli-dress', 5, 5, 5, 5, 5),
- ('leya-wrap-dress', 5, 5, 5, 5, 5),
- ('dalhia-blouse', 5, 5, 5, 5, 5),
- ('bella-hand-painted-blouse', 5, 5, 5, 5, 5),
- ('bella-blouse', 5, 5, 5, 5, 5),
- ('iris-vest', 5, 5, 5, 5, 5),
- ('lili-top-satin', 5, 5, 5, 5, 5),
- ('lisia-dress', 5, 5, 5, 5, 5),
- ('dahlia-blouse', 5, 5, 5, 5, 5),
- ('senna-skirt', 5, 5, 5, 5, 5),
- ('delphi-culottes', 5, 5, 5, 5, 5),
- ('reeva-denim-jacket', 5, 5, 5, 5, 5),
- ('tilia-blouse', 5, 5, 5, 5, 5),
- ('lola-oversized-shirt', 5, 5, 5, 5, 5),
- ('peri-blouse', 5, 5, 5, 5, 5),
- ('flora-wrap-dress', 5, 5, 5, 5, 5),
- ('marigold-trench-coat', 5, 5, 5, 5, 5),
- ('helen-blazer', 5, 5, 5, 5, 5)
+INSERT INTO public.stock (idname, xs, s, m, ml, l, one_size) VALUES
+ ('tuli-dress'                , 5, 5, 5, 5, 5, NULL),
+ ('leya-wrap-dress'           , 5, 5, 5, 5, 5, NULL),
+ ('dalhia-blouse'             , 5, 5, 5, 5, 5, NULL),
+ ('bella-hand-painted-blouse' , 5, 5, 5, 5, 5, NULL),
+ ('bella-blouse'              , 5, 5, 5, 5, 5, NULL),
+ ('iris-vest'                 , 5, 5, 5, 5, 5, NULL),
+ ('lili-top-satin'            , 5, 5, 5, 5, 5, NULL),
+ ('lisia-dress'               , 5, 5, 5, 5, 5, NULL),
+ ('dahlia-blouse'             , 5, 5, 5, 5, 5, NULL),
+ ('senna-skirt'               , 5, 5, 5, 5, 5, NULL),
+ ('delphi-culottes'           , 5, 5, 5, 5, 5, NULL),
+ ('reeva-denim-jacket'        , 5, 5, 5, 5, 5, NULL),
+ ('tilia-blouse'              , 5, 5, 5, 5, 5, NULL),
+ ('lola-oversized-shirt'      , 5, 5, 5, 5, 5, NULL),
+ ('peri-blouse'               , 5, 5, 5, 5, 5, NULL),
+ ('flora-wrap-dress'          , 5, 5, 5, 5, 5, NULL),
+ ('marigold-trench-coat'      , 5, 5, 5, 5, 5, NULL),
+ ('helen-blazer'              , 5, 5, 5, 5, 5, NULL),
+ ('peri-sis-handkerchief'     , NULL, NULL, NULL, NULL, NULL, 5)
  ON CONFLICT (idname) DO UPDATE SET
  xs = EXCLUDED.xs,
  s = EXCLUDED.s,
  m = EXCLUDED.m,
  ml = EXCLUDED.ml,
- l = EXCLUDED.l
+ l = EXCLUDED.l,
+ one_size = EXCLUDED.one_size
  ;
