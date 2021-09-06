@@ -15,6 +15,10 @@ export class ProductService {
     return this.productRepository.find(productFilterDto);
   }
 
+  getBasicProductInfos(): Promise<Partial<ProductEntity>[]> {
+    return this.productRepository.getBasicProductInfos();
+  }
+
   findOne(id: number): Promise<ProductEntity> {
     return this.productRepository.findOne(id);
   }
