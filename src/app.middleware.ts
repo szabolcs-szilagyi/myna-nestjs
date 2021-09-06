@@ -10,7 +10,11 @@ import { omit } from 'lodash/fp';
  * @param {} Response
  * @param {} NextFunction
  */
-export function catchAllOmiter(req: Request, res: Response, next: NextFunction) {
+export function catchAllOmiter(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   req.query = omit('catchAll', req.query);
 
   next();

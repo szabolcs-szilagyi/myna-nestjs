@@ -8,11 +8,15 @@ import { ProductRepository } from './product.repository';
 export class ProductService {
   constructor(
     @InjectRepository(ProductRepository)
-    private productRepository: ProductRepository
+    private productRepository: ProductRepository,
   ) {}
 
   findAll(productFilterDto: ProductFilterDto): Promise<ProductEntity[]> {
     return this.productRepository.find(productFilterDto);
+  }
+
+  getBasicProductInfos(): Promise<Partial<ProductEntity>[]> {
+    return this.productRepository.getBasicProductInfos();
   }
 
   findOne(id: number): Promise<ProductEntity> {

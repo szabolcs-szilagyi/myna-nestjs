@@ -1,4 +1,12 @@
-import { Controller, Get, Inject, Param, ParseIntPipe, Query, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ProductEntity } from './entities/product.entity';
 import { ProductService } from './product.service';
 import { ProductFilterDto } from './dto/product-filter.dto';
@@ -7,14 +15,17 @@ import { ProductFilterDto } from './dto/product-filter.dto';
 export class ProductController {
   constructor(
     @Inject(ProductService)
-    private productService: ProductService
+    private productService: ProductService,
   ) {}
 
   @Get()
-  getProductData(
-    @Query(ValidationPipe) productFilterDto: ProductFilterDto
-  ) {
+  getProductData(@Query(ValidationPipe) productFilterDto: ProductFilterDto) {
     return this.productService.findAll(productFilterDto);
+  }
+
+  @Get('basic-infos')
+  async getBasicProductInfos(): Promise<Partial<ProductEntity>[]> {
+    return this.productService.getBasicProductInfos();
   }
 
   @Get(':id')

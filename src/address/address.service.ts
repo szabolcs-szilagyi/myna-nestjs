@@ -45,7 +45,7 @@ export class AddressService {
       where: { email },
       order: { id: 'DESC' },
       take: 1,
-    })
+    });
 
     return availableAddresses[0];
   }
@@ -53,7 +53,7 @@ export class AddressService {
   getDeliveryCost(country: string) {
     country = country.toLowerCase();
 
-    if(country === 'poland') {
+    if (country === 'poland') {
       return 0;
     } else if (AddressService.euCountries.has(country)) {
       return 10;
@@ -63,14 +63,14 @@ export class AddressService {
   }
 
   getShippingInfo(country: string) {
-    if(country === '0' || !country) {
-			return 'Plus shipping fee';
+    if (country === '0' || !country) {
+      return 'Plus shipping fee';
     }
 
     const deliveryCost = this.getDeliveryCost(country);
-    if(deliveryCost === 0) return 'incl. free shipping'
-    if(deliveryCost === 10) return 'incl. €10 shipping fee (EU)'
-		if(deliveryCost === 25) return 'incl. €25 shipping fee (Non-EU)';
+    if (deliveryCost === 0) return 'incl. free shipping';
+    if (deliveryCost === 10) return 'incl. €10 shipping fee (EU)';
+    if (deliveryCost === 25) return 'incl. €25 shipping fee (Non-EU)';
   }
 
   async upsertAddressData(address: AddressEntity): Promise<void> {

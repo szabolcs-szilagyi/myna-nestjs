@@ -1,7 +1,7 @@
-import { Transform } from "class-transformer";
-import { IsInt, IsString, Max, Min } from "class-validator";
-import { emailPurification } from "../../utils/email-purification";
-import { mildPurification } from "../../utils/mild-purification";
+import { Transform } from 'class-transformer';
+import { IsInt, IsString } from 'class-validator';
+import { emailPurification } from '../../utils/email-purification';
+import { mildPurification } from '../../utils/mild-purification';
 
 export class AddressDataDto {
   @IsInt()

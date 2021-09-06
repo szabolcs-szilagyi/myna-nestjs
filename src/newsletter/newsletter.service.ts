@@ -17,12 +17,15 @@ export class NewsletterService {
   ) {}
 
   async subscribe(email: string): Promise<string> {
-    const alreadySubscribed = await this.newsletterRepository.findOne({ email }, { select: ['id'] })
+    const alreadySubscribed = await this.newsletterRepository.findOne(
+      { email },
+      { select: ['id'] },
+    );
 
-    if(alreadySubscribed) return '';
+    if (alreadySubscribed) return '';
 
     let token = crypto.randomBytes(16).toString('hex');
-    const queryRunner = this.connection.createQueryRunner()
+    const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
@@ -31,12 +34,12 @@ export class NewsletterService {
       enabled: 0,
       subscribeDate: new Date(),
       token,
-    })
+    });
 
     try {
       await this.emailService.sendNewsletterConfirmationEmail({ email, token });
       await queryRunner.commitTransaction();
-    } catch(e) {
+    } catch (e) {
       token = '';
       await queryRunner.rollbackTransaction();
     } finally {
@@ -47,7 +50,10 @@ export class NewsletterService {
   }
 
   async confirm(email: string, token: string): Promise<number> {
-    const result = await this.newsletterRepository.update({ token }, { enabled: 1 });
+    const result = await this.newsletterRepository.update(
+      { token },
+      { enabled: 1 },
+    );
     await this.emailService.sendSubscribedEmail({ email, token });
 
     return result.affected;

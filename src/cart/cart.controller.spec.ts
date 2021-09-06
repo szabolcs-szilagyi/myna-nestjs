@@ -83,10 +83,8 @@ describe('CartController', () => {
 
   describe('POST cart', () => {
     it('requires session and product details', () => {
-      return agent(app.getHttpServer())
-        .post('/cart')
-        .expect(400);
-    })
+      return agent(app.getHttpServer()).post('/cart').expect(400);
+    });
 
     it('able to add product', async () => {
       const sessionToken = 'randomletters1324324';
@@ -101,16 +99,14 @@ describe('CartController', () => {
 
       const cartItemRecord = await cartRepo.find({ sessionToken });
 
-      assert.match(cartItemRecord[0], { paid: match.falsy, sessionToken })
-    })
+      assert.match(cartItemRecord[0], { paid: match.falsy, sessionToken });
+    });
   });
 
   describe('DELETE cart/:id', () => {
     it('requires session and product id', () => {
-      return agent(app.getHttpServer())
-        .delete('/cart/0')
-        .expect(400);
-    })
+      return agent(app.getHttpServer()).delete('/cart/0').expect(400);
+    });
 
     it('able to remove product from cart', async () => {
       const sessionToken = 'randomles1324324';
@@ -166,7 +162,7 @@ describe('CartController', () => {
         .set('session-token', sessionToken)
         .expect(200)
         .then(({ body }) => {
-          assert.match(body[0], { idName: 'first', size: 'L' })
+          assert.match(body[0], { idName: 'first', size: 'L' });
         });
     });
   });
@@ -179,7 +175,9 @@ describe('CartController', () => {
     });
 
     it('reduces stock levels', async () => {
-      tokenService.getEmailBySessionToken.callsFake(async () => 'slkdjfslkdjfls');
+      tokenService.getEmailBySessionToken.callsFake(
+        async () => 'slkdjfslkdjfls',
+      );
       const sessionToken = 'fdsafdsafdsa';
       await agent(app.getHttpServer())
         .post('/cart')
@@ -204,7 +202,9 @@ describe('CartController', () => {
     });
 
     it('set cart items that they have been paid', async () => {
-      tokenService.getEmailBySessionToken.callsFake(async () => 'slkdjfslkdjfls');
+      tokenService.getEmailBySessionToken.callsFake(
+        async () => 'slkdjfslkdjfls',
+      );
       const sessionToken = 'fdsafdsalkjlkj';
       await agent(app.getHttpServer())
         .post('/cart')
@@ -232,7 +232,9 @@ describe('CartController', () => {
     });
 
     it('records the transaction in the purchased repo', async () => {
-      tokenService.getEmailBySessionToken.callsFake(async () => 'slkdjfslkdjfls');
+      tokenService.getEmailBySessionToken.callsFake(
+        async () => 'slkdjfslkdjfls',
+      );
       const sessionToken = 'fdsafeeeeeelkj';
       await agent(app.getHttpServer())
         .post('/cart')
@@ -250,7 +252,7 @@ describe('CartController', () => {
       const purchaseRecords = await purchasedRepo.find({ sessionToken });
 
       assert.calledOnce(tokenService.getEmailBySessionToken);
-      expect(purchaseRecords.length).toEqual(1)
+      expect(purchaseRecords.length).toEqual(1);
     });
   });
 
@@ -366,9 +368,7 @@ describe('CartController', () => {
 
   describe('GET total', () => {
     it('returns error if session token not given', () => {
-      return agent(app.getHttpServer())
-        .get('/cart/total')
-        .expect(400);
+      return agent(app.getHttpServer()).get('/cart/total').expect(400);
     });
 
     it('will calculate with zero delivery if email not set', async () => {
@@ -455,7 +455,7 @@ describe('CartController', () => {
       addressService.getAddressDataByEmail.resolves(<AddressEntity>{
         country: 'Poland',
       });
-      addressService.getDeliveryCost.returns(10)
+      addressService.getDeliveryCost.returns(10);
 
       return agent(app.getHttpServer())
         .get('/cart/total')
@@ -494,7 +494,7 @@ describe('CartController', () => {
       addressService.getAddressDataByEmail.resolves(<AddressEntity>{
         country: 'Poland',
       });
-      addressService.getDeliveryCost.returns(10)
+      addressService.getDeliveryCost.returns(10);
 
       return agent(app.getHttpServer())
         .get('/cart/total')
@@ -527,7 +527,7 @@ describe('CartController', () => {
       addressService.getAddressDataByEmail.resolves(<AddressEntity>{
         country: 'Poland',
       });
-      addressService.getDeliveryCost.returns(10)
+      addressService.getDeliveryCost.returns(10);
 
       return agent(app.getHttpServer())
         .get('/cart/total')
@@ -561,7 +561,7 @@ describe('CartController', () => {
       addressService.getAddressDataByEmail.resolves(<AddressEntity>{
         country: 'Poland',
       });
-      addressService.getDeliveryCost.returns(10)
+      addressService.getDeliveryCost.returns(10);
 
       return agent(app.getHttpServer())
         .get('/cart/total')

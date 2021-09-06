@@ -30,12 +30,8 @@ describe('TokenController', () => {
         ]),
       ],
       controllers: [TokenController],
-      providers: [
-        TokenService,
-        UserService,
-      ],
-    })
-      .compile();
+      providers: [TokenService, UserService],
+    }).compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -47,27 +43,26 @@ describe('TokenController', () => {
 
   beforeEach(async () => {
     await sessionRepo.delete({});
-  })
+  });
 
   describe('GET get-email', () => {
-
     it('returns default empty value for no session', async () => {
       return agent(app.getHttpServer())
         .get('/token/get-email')
-        .expect(200, { email: null })
+        .expect(200, { email: null });
     });
 
     it('returns the e-mail belonging to the session', async () => {
       const email = 'tuto@ges.hi';
       const sessionToken = 'lkasjdfl;aksjdf;aksjdf;lakj';
-      await sessionRepo.insert({ email, sessionToken, createTime: new Date() })
+      await sessionRepo.insert({ email, sessionToken, createTime: new Date() });
 
       return agent(app.getHttpServer())
         .get('/token/get-email')
         .set('session-token', sessionToken)
-        .expect(200, { email })
+        .expect(200, { email });
     });
-  })
+  });
 
   describe('GET session', () => {
     it('returns a new session token', async () => {
@@ -75,7 +70,7 @@ describe('TokenController', () => {
         .get('/token/session')
         .expect(200);
 
-      assert.match(body, { sessiontoken: match.string })
+      assert.match(body, { sessiontoken: match.string });
     });
   });
 });

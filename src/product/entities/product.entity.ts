@@ -1,8 +1,14 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { CartEntity } from "../../cart/entities/cart.entity";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { CartEntity } from '../../cart/entities/cart.entity';
 
 @Entity({
-  name: 'products'
+  name: 'products',
 })
 export class ProductEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -20,6 +26,9 @@ export class ProductEntity extends BaseEntity {
   @Column('varchar', { name: 'productname' })
   name: string;
 
+  @Column('varchar', { name: 'name_pl' })
+  namePl: string;
+
   @Column('varchar', { name: 'productcolor' })
   color: string;
 
@@ -29,8 +38,14 @@ export class ProductEntity extends BaseEntity {
   @Column('varchar', { name: 'desclong' })
   description: string;
 
+  @Column('varchar', { name: 'desc_pl' })
+  descriptionPl: string;
+
   @Column('varchar', { name: 'comp_care' })
   compCare: string;
+
+  @Column('varchar', { name: 'composition_and_care_pl' })
+  compositionAndCarePl: string;
 
   @Column('varchar')
   pic1: string;
@@ -59,6 +74,6 @@ export class ProductEntity extends BaseEntity {
   @Column('varchar')
   pic9: string;
 
-  @OneToMany(() => CartEntity, cartItems => cartItems.idName)
+  @OneToMany(() => CartEntity, (cartItems) => cartItems.idName)
   cartItems: CartEntity[];
 }

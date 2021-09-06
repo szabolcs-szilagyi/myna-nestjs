@@ -8,10 +8,7 @@ import { TokenService } from './token.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      LoginTokenRepository,
-      SessionTokenRepository,
-    ]),
+    TypeOrmModule.forFeature([LoginTokenRepository, SessionTokenRepository]),
     UserModule,
   ],
   controllers: [TokenController],

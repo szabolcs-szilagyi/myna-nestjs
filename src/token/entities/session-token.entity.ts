@@ -1,7 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({
-  name: 'session_token'
+  name: 'session_token',
 })
 export class SessionToken {
   @PrimaryGeneratedColumn()

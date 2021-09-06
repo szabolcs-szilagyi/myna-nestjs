@@ -16,13 +16,15 @@ export class TokenController {
   ) {}
 
   @Post('mail-login')
-  async mailLogin(@Body('email', EmailStripperPipe) email: string): Promise<object> {
+  async mailLogin(
+    @Body('email', EmailStripperPipe) email: string,
+  ): Promise<any> {
     const loginToken = await this.tokenService.getLoginToken(email);
 
     return {
       logintoken: loginToken,
       email,
-    }
+    };
   }
 
   @Post('login')
@@ -31,20 +33,27 @@ export class TokenController {
     @PurifiedToken('login-token') loginToken: string,
     @PurifiedToken('session-token') sessionToken: string,
   ) {
-    const isAuthorized = await this.tokenService.authorizeLogin(email, loginToken);
-    const isSessionGood = await this.tokenService.validateSessionToken(sessionToken);
+    const isAuthorized = await this.tokenService.authorizeLogin(
+      email,
+      loginToken,
+    );
+    const isSessionGood = await this.tokenService.validateSessionToken(
+      sessionToken,
+    );
     let successful = '0';
 
-    if(isAuthorized && isSessionGood) {
-      const emailExist = await this.userService.checkEmailExistInDatabase(email);
-      if(!emailExist) {
-		    await this.userService.createStubUser(email);
+    if (isAuthorized && isSessionGood) {
+      const emailExist = await this.userService.checkEmailExistInDatabase(
+        email,
+      );
+      if (!emailExist) {
+        await this.userService.createStubUser(email);
       }
-		  await this.tokenService.setEmailToSession(email, sessionToken);
+      await this.tokenService.setEmailToSession(email, sessionToken);
       await this.userService.updateLastLogin(email);
       successful = '1';
     } else {
-		  sessionToken = await this.tokenService.setSessionToken();
+      sessionToken = await this.tokenService.setSessionToken();
       successful = '0';
     }
 
@@ -52,14 +61,14 @@ export class TokenController {
       login_successful: successful,
       email,
       sessiontoken: sessionToken,
-    }
+    };
   }
 
   @Get('ping')
-  async ping(
-    @PurifiedToken('session-token') sessionToken: string,
-  ) {
-    const isSessionValid = await this.tokenService.validateSessionToken(sessionToken);
+  async ping(@PurifiedToken('session-token') sessionToken: string) {
+    const isSessionValid = await this.tokenService.validateSessionToken(
+      sessionToken,
+    );
 
     /**
      * This logic about the deletion is point less: the `validateSessionToken`
@@ -69,7 +78,7 @@ export class TokenController {
      * but would worth a cleanup in the logic
      */
     let pong: string;
-    if(isSessionValid) {
+    if (isSessionValid) {
       await this.tokenService.fakeExtendSession(sessionToken);
       pong = '1';
     } else {
@@ -81,18 +90,18 @@ export class TokenController {
     return {
       pong,
       sessiontoken: sessionToken,
-    }
+    };
   }
 
   @Get('am-i-logged-in')
-  async amILoggedIn(
-    @PurifiedToken('session-token') sessionToken: string,
-  ) {
-    const isSesstionValid = await this.tokenService.validateSessionToken(sessionToken);
+  async amILoggedIn(@PurifiedToken('session-token') sessionToken: string) {
+    const isSesstionValid = await this.tokenService.validateSessionToken(
+      sessionToken,
+    );
 
     let email: string;
-    if(isSesstionValid) {
-      email = await this.tokenService.getEmailBySessionToken(sessionToken)
+    if (isSesstionValid) {
+      email = await this.tokenService.getEmailBySessionToken(sessionToken);
     } else {
       email = 'nodata';
     }
@@ -105,9 +114,12 @@ export class TokenController {
     @PurifiedToken('session-token') sessionToken: string,
     @CustomHeaders('email', EmailStripperPipe) email: string,
   ): Promise<UserDataDto | string> {
-    const isSessionValid = await this.tokenService.validateSessionTokenStrict(sessionToken, email);
+    const isSessionValid = await this.tokenService.validateSessionTokenStrict(
+      sessionToken,
+      email,
+    );
     let userData: string | UserDataDto;
-    if(isSessionValid) {
+    if (isSessionValid) {
       userData = await this.userService.getUserData(email);
     } else {
       userData = '0';
@@ -121,10 +133,13 @@ export class TokenController {
     @PurifiedToken('session-token') sessionToken: string,
     @Body() userDataDto: UserDataDto,
   ) {
-    const isSessionValid = await this.tokenService.validateSessionTokenStrict(sessionToken, userDataDto.email);
+    const isSessionValid = await this.tokenService.validateSessionTokenStrict(
+      sessionToken,
+      userDataDto.email,
+    );
 
     let success: string;
-    if(isSessionValid) {
+    if (isSessionValid) {
       await this.userService.updateUserData(userDataDto);
       success = '1';
     } else {
@@ -135,13 +150,13 @@ export class TokenController {
   }
 
   @Get('get-email')
-  async getEmail(
-    @PurifiedToken('session-token') sessionToken: string,
-  ) {
-    const isSesstionValid = await this.tokenService.validateSessionToken(sessionToken);
+  async getEmail(@PurifiedToken('session-token') sessionToken: string) {
+    const isSesstionValid = await this.tokenService.validateSessionToken(
+      sessionToken,
+    );
 
     let email: string | null;
-    if(isSesstionValid) {
+    if (isSesstionValid) {
       email = await this.tokenService.getEmailBySessionToken(sessionToken);
     } else {
       email = null;

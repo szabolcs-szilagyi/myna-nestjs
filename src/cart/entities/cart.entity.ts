@@ -1,5 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { ProductEntity } from "../../product/entities/product.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ProductEntity } from '../../product/entities/product.entity';
 
 @Entity({ name: 'cart' })
 export class CartEntity {
@@ -21,7 +27,7 @@ export class CartEntity {
   @Column('boolean')
   paid: boolean;
 
-  @ManyToOne(type => ProductEntity, product => product.cartItems)
+  @ManyToOne(() => ProductEntity, (product) => product.cartItems)
   @JoinColumn({ name: 'idname', referencedColumnName: 'idName' })
   product: ProductEntity;
 }

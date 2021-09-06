@@ -18,9 +18,7 @@ export class AddressController {
   ) {}
 
   @Get('shipping-info')
-  async getShippingInfo(
-    @PurifiedToken('session-token') sessionToken: string,
-  ) {
+  async getShippingInfo(@PurifiedToken('session-token') sessionToken: string) {
     const email = await this.tokenService.getEmailBySessionToken(sessionToken);
     const address = await this.addressService.getAddressDataByEmail(email);
     const shippingInfo = this.addressService.getShippingInfo(address?.country);
@@ -33,13 +31,19 @@ export class AddressController {
     @PurifiedToken('session-token') sessionToken: string,
     @CustomHeaders('email', EmailStripperPipe) email: string,
   ) {
-    const isSessionValid = await this.tokenService.validateSessionTokenStrict(sessionToken, email);
+    const isSessionValid = await this.tokenService.validateSessionTokenStrict(
+      sessionToken,
+      email,
+    );
 
-    let addressData: Omit<AddressEntity, 'id' | 'sessionToken' | 'email' | 'name'>;
-    if(isSessionValid) {
+    let addressData: Omit<
+      AddressEntity,
+      'id' | 'sessionToken' | 'email' | 'name'
+    >;
+    if (isSessionValid) {
       addressData = lodash.omit(
         ['id', 'sessionToken', 'email', 'name'],
-        (await this.addressService.getAddressDataByEmail(email))
+        await this.addressService.getAddressDataByEmail(email),
       );
     } else {
       addressData = {} as AddressEntity;
@@ -53,11 +57,17 @@ export class AddressController {
     @PurifiedToken('session-token') sessionToken: string,
     @Body() addressDataDto: AddressDataDto,
   ) {
-    const isSessionValid = await this.tokenService.validateSessionTokenStrict(sessionToken, addressDataDto.email)
+    const isSessionValid = await this.tokenService.validateSessionTokenStrict(
+      sessionToken,
+      addressDataDto.email,
+    );
 
     if (!isSessionValid) return { success: false };
 
-    await this.addressService.upsertAddressData(<AddressEntity>{ ...addressDataDto, sessionToken });
+    await this.addressService.upsertAddressData(<AddressEntity>{
+      ...addressDataDto,
+      sessionToken,
+    });
     return { success: true };
   }
 }

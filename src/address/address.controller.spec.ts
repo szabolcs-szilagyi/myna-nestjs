@@ -10,7 +10,7 @@ import { LoginTokenRepository } from '../token/login-token.repository';
 import { SessionTokenRepository } from '../token/session-token.repository';
 import { AddressEntity } from './entities/address.entity';
 import { AddressDataDto } from './dto/address-data.dto';
-import { assert, match } from 'sinon';
+import { assert } from 'sinon';
 import { omit } from 'lodash/fp';
 
 describe('AddressController', () => {
@@ -31,15 +31,11 @@ describe('AddressController', () => {
           AddressRepository,
           LoginTokenRepository,
           SessionTokenRepository,
-        ])
+        ]),
       ],
       controllers: [AddressController],
-      providers: [
-        AddressService,
-        TokenService,
-      ],
-    })
-      .compile();
+      providers: [AddressService, TokenService],
+    }).compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -50,7 +46,7 @@ describe('AddressController', () => {
   beforeEach(async () => {
     await sessionRepo.delete({});
     await addressRepo.delete({});
-  })
+  });
 
   afterAll(() => app.close());
 
@@ -58,7 +54,7 @@ describe('AddressController', () => {
     it('returns default text if no session available', () => {
       return supertest(app.getHttpServer())
         .get('/address/shipping-info')
-        .expect(200, { shippinginfo: 'Plus shipping fee' })
+        .expect(200, { shippinginfo: 'Plus shipping fee' });
     });
 
     it('for EU countries shipping is 10 EUR', async () => {
@@ -69,7 +65,7 @@ describe('AddressController', () => {
         email,
         sessionToken,
         createTime: new Date(),
-      })
+      });
 
       await addressRepo.insert({
         country: 'austria',
@@ -83,7 +79,7 @@ describe('AddressController', () => {
         zip: '',
         comment: '',
         mobile: '',
-      })
+      });
 
       return supertest(app.getHttpServer())
         .get('/address/shipping-info')
@@ -99,7 +95,7 @@ describe('AddressController', () => {
         email,
         sessionToken,
         createTime: new Date(),
-      })
+      });
 
       await addressRepo.insert({
         country: 'australia',
@@ -113,13 +109,13 @@ describe('AddressController', () => {
         zip: '',
         comment: '',
         mobile: '',
-      })
+      });
 
       return supertest(app.getHttpServer())
         .get('/address/shipping-info')
         .set('session-token', sessionToken)
         .expect(200, { shippinginfo: 'incl. €25 shipping fee (Non-EU)' });
-    })
+    });
 
     it('for Poland its free shipping', async () => {
       const sessionToken = 'asdfasdfasdfasdfasdfasd';
@@ -129,7 +125,7 @@ describe('AddressController', () => {
         email,
         sessionToken,
         createTime: new Date(),
-      })
+      });
 
       await addressRepo.insert({
         country: 'poland',
@@ -143,13 +139,13 @@ describe('AddressController', () => {
         zip: '',
         comment: '',
         mobile: '',
-      })
+      });
 
       return supertest(app.getHttpServer())
         .get('/address/shipping-info')
         .set('session-token', sessionToken)
         .expect(200, { shippinginfo: 'incl. free shipping' });
-    })
+    });
   });
 
   describe('GET address-data', () => {
@@ -176,7 +172,7 @@ describe('AddressController', () => {
         type: true,
         state: '',
         zip: '3242-23',
-      }
+      };
 
       await sessionRepo.insert({ email, sessionToken, createTime: new Date() });
       await addressRepo.insert(addressData);
@@ -220,9 +216,13 @@ describe('AddressController', () => {
         comment: 'dog barks',
         zip: '123-123',
         type: true,
-      }
+      };
 
-      await sessionRepo.insert({ email: addressData.email, sessionToken, createTime: new Date() });
+      await sessionRepo.insert({
+        email: addressData.email,
+        sessionToken,
+        createTime: new Date(),
+      });
 
       return supertest(app.getHttpServer())
         .post('/address/address-data')
@@ -245,9 +245,13 @@ describe('AddressController', () => {
         comment: 'dog barks',
         zip: '123-123',
         type: true,
-      }
+      };
 
-      await sessionRepo.insert({ email: addressData.email, sessionToken, createTime: new Date() });
+      await sessionRepo.insert({
+        email: addressData.email,
+        sessionToken,
+        createTime: new Date(),
+      });
 
       await supertest(app.getHttpServer())
         .post('/address/address-data')
@@ -261,8 +265,11 @@ describe('AddressController', () => {
         .set('email', addressData.email)
         .expect(200)
         .then(({ body }) => {
-          assert.match(body, omit(['name', 'email', 'sessionToken'], addressData));
+          assert.match(
+            body,
+            omit(['name', 'email', 'sessionToken'], addressData),
+          );
         });
     });
-  })
+  });
 });

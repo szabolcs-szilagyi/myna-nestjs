@@ -1,6 +1,6 @@
-import { EntityRepository, Repository } from "typeorm";
-import { MoreAccurateAvailablityDto } from "./dto/more-accurate-availablity.dto";
-import { CartEntity } from "./entities/cart.entity";
+import { EntityRepository, Repository } from 'typeorm';
+import { MoreAccurateAvailablityDto } from './dto/more-accurate-availablity.dto';
+import { CartEntity } from './entities/cart.entity';
 
 @EntityRepository(CartEntity)
 export class CartRepository extends Repository<CartEntity> {
@@ -20,12 +20,18 @@ export class CartRepository extends Repository<CartEntity> {
     await this.update({ id: product.id }, { paid: true });
   }
 
-  getProductReservation(moreAccurateAvailablityDto: MoreAccurateAvailablityDto) {
+  getProductReservation(
+    moreAccurateAvailablityDto: MoreAccurateAvailablityDto,
+  ) {
     const { sessionToken, idName, size } = moreAccurateAvailablityDto;
-    return this.find({ sessionToken, idName, size: size === 'oneSize' ? 'onesize': size })
+    return this.find({
+      sessionToken,
+      idName,
+      size: size === 'oneSize' ? 'onesize' : size,
+    });
   }
 
-  getItemsWithDetails(sessionToken: string, filter: object) {
+  getItemsWithDetails(sessionToken: string, filter: any) {
     return this.find({
       where: { ...filter, sessionToken },
       relations: ['product'],
