@@ -256,7 +256,7 @@ INSERT INTO public.products (idname, availability, is_one_size, productname, pro
      'LOLA Oversize Shirt',
      'Satin White',
      149,
-     '<div class="ju">Love&light collection. Classic and timeless design. Crafted from organic cotton cotton, certified by GOTS,  this shirt is cut for an oversize fit and elevated with a flattering longer back hem and hidden side pockets. Hand crafted embroidery hidden inside on the collar makes LOLA very special and unique. Fall in love with hidden details  - details only you know. Perfect with your favorite jeans, culottes or by itself for chilling around the house.</div>',
+     '<div class="ju">Love&light collection. Classic and timeless design. Crafted from organic cotton, certified by GOTS,  this shirt is cut for an oversize fit and elevated with a flattering longer back hem and hidden side pockets. Hand crafted embroidery hidden inside on the collar makes LOLA very special and unique. Fall in love with hidden details  - details only you know. Perfect with your favorite jeans, culottes or by itself for chilling around the house.</div>',
      '<div class="ju">100% organic cotton voile, GOTS certified, made in Turkey. Wash on delicate cycle at 30 celsius degrees, iron at low setting and do not tumble dry. Our fabrics are sustainable and do not require dry cleaning.</div>',
      'lola-oversized-shirt-01.jpg',
      'lola-oversized-shirt-02.jpg',
