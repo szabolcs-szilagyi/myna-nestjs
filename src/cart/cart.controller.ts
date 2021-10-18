@@ -113,7 +113,9 @@ export class CartController {
     let deliveryCost: number;
     if (email && email !== 'nodata') {
       const address = await this.addressSevice.getAddressDataByEmail(email);
-      deliveryCost = this.addressSevice.getDeliveryCost(address.country);
+      deliveryCost = address
+        ? this.addressSevice.getDeliveryCost(address.country)
+        : 0;
     } else {
       deliveryCost = 0;
     }
