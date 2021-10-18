@@ -9,7 +9,7 @@ import { StockEntity } from './entities/stock.entity';
 import { MoreAccurateAvailablityDto } from './dto/more-accurate-availablity.dto';
 import { sumBy } from 'lodash';
 
-type Coupon = 'mynafriend10' | 'mynagift15' | 'thespecial20';
+type Coupon = 'mynafriend10' | 'mynagift15';
 
 @Injectable()
 export class CartService {
@@ -40,7 +40,6 @@ export class CartService {
     const validCoupons = {
       mynafriend10: 0.9,
       mynagift15: 0.85,
-      thespecial20: 0.8,
     };
 
     const reduction = validCoupons?.[coupon];
