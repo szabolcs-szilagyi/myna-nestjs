@@ -10,6 +10,7 @@ const {
 const devEnv = new Set([undefined, 'dev', 'development']);
 const isDevelopmentEnv = devEnv.has(NODE_ENV);
 const origin = isDevelopmentEnv || /mynalabel\.com$/;
+const cookieDomain = isDevelopmentEnv ? 'localhost' : 'mynalabel.com';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,7 +27,7 @@ async function bootstrap() {
       saveUninitialized: true,
       name: `${NODE_ENV || 'development'}-myna`,
       cookie: {
-        domain: '*',
+        domain: cookieDomain,
         maxAge: 24 * 60 * 60 * 1000,
         httpOnly: isDevelopmentEnv,
         secure: !isDevelopmentEnv,
