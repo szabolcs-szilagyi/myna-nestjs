@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS client (
+  sid VARCHAR NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  firstname VARCHAR(128) NOT NULL,
+  lastname VARCHAR(128) NOT NULL,
+  address_line_1 VARCHAR(255) NOT NULL,
+  address_line_2 VARCHAR(255),
+  city VARCHAR(255) NOT NULL,
+  county VARCHAR(255),
+  country VARCHAR(255) NOT NULL,
+  postal_code VARCHAR(128) NOT NULL,
+  mobile VARCHAR(128) NOT NULL,
+  comment VARCHAR(1024),
+
+  PRIMARY KEY (sid),
+  FOREIGN KEY (sid) REFERENCES session ON DELETE CASCADE
+);
+
+ALTER TABLE cart
+  ADD COLUMN client VARCHAR DEFAULT NULL,
+  ADD CONSTRAINT cart_client FOREIGN KEY (client) REFERENCES client (sid) ON DELETE CASCADE;

@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS purchase_log (
+  id SERIAL PRIMARY KEY,
+  creation_time TIMESTAMPTZ DEFAULT NOW(),
+  log_data JSON NOT NULL
+)
