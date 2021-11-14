@@ -27,6 +27,9 @@ export class CartEntity {
   @Column('boolean')
   paid: boolean;
 
+  @Column()
+  session: string;
+
   @ManyToOne(() => ProductEntity, (product) => product.cartItems)
   @JoinColumn({ name: 'idname', referencedColumnName: 'idName' })
   product: ProductEntity;

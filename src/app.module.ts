@@ -13,6 +13,7 @@ import { catchAllOmiter } from './app.middleware';
 import { AppConfig } from './config/app.config';
 import { EmailModule } from './email/email.module';
 import { SessionMiddleware } from './session.middleware';
+import { ClientModule } from './client/client.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { SessionMiddleware } from './session.middleware';
     TokenModule,
     UserModule,
     EmailModule,
+    ClientModule,
   ],
   controllers: [AppController],
 })

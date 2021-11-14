@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { CartRepository } from './cart.repository';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { StockRepository } from './stock.repository';
@@ -14,25 +13,22 @@ type Coupon = 'mynafriend10' | 'mynagift15';
 @Injectable()
 export class CartService {
   constructor(
-    @InjectRepository(CartRepository)
     private readonly cartRepository: CartRepository,
-    @InjectRepository(StockRepository)
     private readonly stockRepository: StockRepository,
-    @InjectRepository(PurchasedRepository)
-    private readonly purchasedRepository: PurchasedRepository,
-    @InjectConnection()
     private readonly connection: Connection,
   ) {}
 
   async addProductToCart(
     addToCartDto: AddToCartDto,
     sessionToken: string,
+    sessionId: string,
   ): Promise<void> {
     await this.cartRepository.insert({
       ...addToCartDto,
       sessionToken,
       amount: 1,
       paid: false,
+      session: sessionId,
     });
   }
 
@@ -51,12 +47,24 @@ export class CartService {
     }
   }
 
-  async removeProductFromCart(id: number, sessionToken: string): Promise<void> {
-    await this.cartRepository.delete({ id, sessionToken });
+  async removeProductFromCart(
+    id: number,
+    sessionToken: string,
+    sessionId: string,
+  ): Promise<void> {
+    if (sessionId) {
+      await this.cartRepository.delete({ id, session: sessionId });
+    } else {
+      await this.cartRepository.delete({ id, sessionToken });
+    }
   }
 
-  getProductsInCart(sessionToken: string) {
-    return this.cartRepository.getProductsInCart(sessionToken);
+  getProductsInCart(sessionToken: string | null, sessionId: string | null) {
+    if (sessionId) {
+      return this.cartRepository.getProductsInCart(null, sessionId);
+    } else {
+      return this.cartRepository.getProductsInCart(sessionToken, null);
+    }
   }
 
   async setProductsPaid(sessionToken: string, email: string) {
@@ -71,7 +79,7 @@ export class CartService {
       PurchasedRepository,
     );
     try {
-      const products = await cartRepo.getProductsInCart(sessionToken);
+      const products = await cartRepo.getProductsInCart(sessionToken, null);
       for (const product of products) {
         await stockRepo.reduceStock(product.idName, product.size);
         await cartRepo.setProductPaid(product);
@@ -115,7 +123,7 @@ export class CartService {
     );
     const productTotal = sumBy(
       cartItems,
-      (item) => item.amount * item.product.price,
+      item => item.amount * item.product.price,
     );
     const withCoupon = this.applyCoupon(productTotal, <Coupon>coupon);
 

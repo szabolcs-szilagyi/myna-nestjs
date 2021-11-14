@@ -11,6 +11,7 @@ import {
   NotFoundException,
   ValidationPipe,
 } from '@nestjs/common';
+import { SessionId } from '../decorators/session-id.decorator';
 import { AddressService } from '../address/address.service';
 import { PurifiedToken } from '../token/decorators/purified-token.decorator';
 import { TokenService } from '../token/token.service';
@@ -18,6 +19,7 @@ import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { MoreAccurateAvailablityDto } from './dto/more-accurate-availablity.dto';
 import { ProductWithSizeDto } from './dto/product-with-size.dto';
+import { CartEntity } from './entities/cart.entity';
 
 @Controller('cart')
 export class CartController {
@@ -29,35 +31,54 @@ export class CartController {
 
   @Post()
   async addProduct(
+    @SessionId() sessionId: string,
     @PurifiedToken('session-token') sessionToken: string,
     @Body(ValidationPipe) addToCartDto: AddToCartDto,
   ) {
-    if (!sessionToken) throw new BadRequestException();
+    if (!sessionToken && !sessionId) throw new BadRequestException();
 
-    await this.cartService.addProductToCart(addToCartDto, sessionToken);
-
-    return { success: '1' };
+    if (sessionToken) {
+      await this.cartService.addProductToCart(addToCartDto, sessionToken, null);
+      return { success: '1' };
+    } else {
+      console.log('sessionId', sessionId);
+      await this.cartService.addProductToCart(
+        addToCartDto,
+        sessionId,
+        sessionId,
+      );
+    }
   }
 
   @Delete(':id')
   async removeProduct(
+    @SessionId() sessionId: string,
     @PurifiedToken('session-token') sessionToken: string,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    if (!id || !sessionToken) throw new BadRequestException();
+    if (!id || (!sessionToken && !sessionId)) throw new BadRequestException();
 
-    await this.cartService.removeProductFromCart(id, sessionToken);
-
-    return { success: '1' };
+    if (sessionToken) {
+      await this.cartService.removeProductFromCart(id, sessionToken, null);
+      return { success: '1' };
+    } else {
+      await this.cartService.removeProductFromCart(id, sessionToken, sessionId);
+    }
   }
 
   @Get('products-in-cart')
   async getProductsInCart(
+    @SessionId() sessionId: string,
     @PurifiedToken('session-token') sessionToken: string,
   ) {
     if (!sessionToken) throw new BadRequestException();
+    let products: CartEntity[];
 
-    const products = this.cartService.getProductsInCart(sessionToken);
+    if (sessionToken) {
+      products = await this.cartService.getProductsInCart(sessionToken, null);
+    } else {
+      products = await this.cartService.getProductsInCart(null, sessionId);
+    }
 
     return products;
   }

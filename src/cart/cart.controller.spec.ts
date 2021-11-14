@@ -16,6 +16,7 @@ import { AddressService } from '../address/address.service';
 import { ProductModule } from '../product/product.module';
 import { ProductRepository } from '../product/product.repository';
 import { AddressEntity } from '../address/entities/address.entity';
+import { TestModule } from '../test.module';
 
 const sandbox = createSandbox();
 
@@ -37,6 +38,7 @@ describe('CartController', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
+        TestModule,
         TypeOrmModule.forRoot({
           type: 'postgres',
           url: 'postgres://myna_test:test@127.0.0.1/myna_test',
@@ -86,7 +88,7 @@ describe('CartController', () => {
       return agent(app.getHttpServer()).post('/cart').expect(400);
     });
 
-    it('able to add product', async () => {
+    it('able to add product using session token', async () => {
       const sessionToken = 'randomletters1324324';
       await agent(app.getHttpServer())
         .post('/cart')
@@ -100,6 +102,22 @@ describe('CartController', () => {
       const cartItemRecord = await cartRepo.find({ sessionToken });
 
       assert.match(cartItemRecord[0], { paid: match.falsy, sessionToken });
+    });
+
+    it('able to add product using session cookie', async () => {
+      const result = await agent(app.getHttpServer())
+        .post('/cart')
+        .send(<AddToCartDto>{
+          idName: 'something',
+          size: 'XXL',
+        })
+        .expect(201, { success: '1' });
+
+      console.log(result.header);
+
+      // const cartItemRecord = await cartRepo.find({ client: session });
+
+      // assert.match(cartItemRecord[0], { paid: match.falsy, client: session });
     });
   });
 
@@ -219,7 +237,7 @@ describe('CartController', () => {
         .set('session-token', sessionToken)
         .expect(201);
 
-      const cartContent = await cartRepo.getProductsInCart(sessionToken);
+      const cartContent = await cartRepo.getProductsInCart(sessionToken, null);
       const rawCartContent = await cartRepo.find({
         where: { sessionToken },
         order: { id: 'ASC' },

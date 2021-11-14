@@ -7,11 +7,22 @@ export class CartRepository extends Repository<CartEntity> {
   /**
    * WARNING: return non paid items only
    */
-  async getProductsInCart(sessionToken: string): Promise<CartEntity[]> {
-    const products = await this.find({
-      where: { sessionToken, paid: false },
-      order: { id: 'ASC' },
-    });
+  async getProductsInCart(
+    sessionToken: string | null,
+    sessionId: string | null,
+  ): Promise<CartEntity[]> {
+    let products: CartEntity[];
+    if (sessionId) {
+      products = await this.find({
+        where: { session: sessionId, paid: false },
+        order: { id: 'ASC' },
+      });
+    } else {
+      products = await this.find({
+        where: { sessionToken, paid: false },
+        order: { id: 'ASC' },
+      });
+    }
 
     return products;
   }
