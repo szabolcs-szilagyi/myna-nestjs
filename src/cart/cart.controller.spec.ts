@@ -105,19 +105,21 @@ describe('CartController', () => {
     });
 
     it('able to add product using session cookie', async () => {
-      const result = await agent(app.getHttpServer())
+      const idName = 'something-rand' + Math.floor(Math.random() * 1000);
+      await agent(app.getHttpServer())
         .post('/cart')
         .send(<AddToCartDto>{
-          idName: 'something',
+          idName,
           size: 'XXL',
         })
-        .expect(201, { success: '1' });
+        .expect(201);
 
-      console.log(result.header);
+      const cartItemRecord = await cartRepo.findOne({ idName });
 
-      // const cartItemRecord = await cartRepo.find({ client: session });
-
-      // assert.match(cartItemRecord[0], { paid: match.falsy, client: session });
+      assert.match(cartItemRecord, {
+        paid: match.falsy,
+        session: match.string,
+      });
     });
   });
 

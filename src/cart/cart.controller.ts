@@ -10,6 +10,7 @@ import {
   Query,
   NotFoundException,
   ValidationPipe,
+  Session,
 } from '@nestjs/common';
 import { SessionId } from '../decorators/session-id.decorator';
 import { AddressService } from '../address/address.service';
@@ -20,6 +21,7 @@ import { AddToCartDto } from './dto/add-to-cart.dto';
 import { MoreAccurateAvailablityDto } from './dto/more-accurate-availablity.dto';
 import { ProductWithSizeDto } from './dto/product-with-size.dto';
 import { CartEntity } from './entities/cart.entity';
+import { promisify } from 'util';
 
 @Controller('cart')
 export class CartController {
@@ -31,6 +33,7 @@ export class CartController {
 
   @Post()
   async addProduct(
+    @Session() session: any,
     @SessionId() sessionId: string,
     @PurifiedToken('session-token') sessionToken: string,
     @Body(ValidationPipe) addToCartDto: AddToCartDto,
@@ -41,7 +44,10 @@ export class CartController {
       await this.cartService.addProductToCart(addToCartDto, sessionToken, null);
       return { success: '1' };
     } else {
-      console.log('sessionId', sessionId);
+      // if the client's very first request is to this route the session won't
+      // be in the database yet, hence we save it as a first step
+      await promisify(session.save.bind(session))();
+
       await this.cartService.addProductToCart(
         addToCartDto,
         sessionId,

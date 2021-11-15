@@ -123,7 +123,7 @@ export class CartService {
     );
     const productTotal = sumBy(
       cartItems,
-      item => item.amount * item.product.price,
+      (item) => item.amount * item.product.price,
     );
     const withCoupon = this.applyCoupon(productTotal, <Coupon>coupon);
 
