@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { SessionMiddleware } from './session.middleware';
 
 @Module({})
