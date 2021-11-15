@@ -1,0 +1,103 @@
+INSERT INTO public.products (idname, availability, is_one_size, productname, productcolor, productprice, desclong, comp_care, pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, name_pl,  desc_pl,  composition_and_care_pl) VALUES
+   (
+     'mary-dress',
+     'Available',
+     false,
+     'Mary Dress',
+     'Crimson Red',
+     189,
+     '<div class="ju">Our MARY dress arise with a Christmas bloom approach. It blooms with festive crimson red like flowers of Amaryllis,  that are the perfect match for traditional Christmas style. MARY dress flatten with with comfortable design and perfect romantic look. Additionally MARY have attached, hand crafted rose made from the same material, tencel, which you can unfasten any time you need, depend on how you feel the style. Dress it up with elegant MARY this Christmas and transform into casual look after the festive days over for versatile look.</div>',
+     '<div class="ju">100% Tencel, wood cellulose, dyed with GOTS certified dyes with GOTS certificate, made in Turkey. Wash on a gentle cycle at 30 degrees, iron on a low level and do not tumble dry. Our fabrics are durable and do not require dry cleaning. Iron inside out.</div>',
+     'mary-dress-1.jpg',
+     'mary-dress-2.jpg',
+     'mary-dress-3.jpg',
+     'mary-dress-4.jpg',
+     NULL,
+     NULL,
+     NULL,
+     NULL,
+     NULL,
+     'Mary Sukienka',
+     '<div class="ju">Nasza sukienka MARY powstała z nadejściem świątecznych rozkwitów. Kwitnie świąteczną, karmazynową czerwienią niczym kwiaty Amarylis, które idealnie komponują się z tradycyjnym świątecznym stylem. Sukienka MARY zachwyca wygodnym krojem i idealnym romantycznym stylem. Dodatkowo MARY posiada, ręcznie robiona różę z tego samego materiału, tencel, który możesz odpiąć w dowolnym momencie, w zależności od Twojej potrzeby. Ubierz się w elegancką MARY w te Święta i przekształć w casualową stylizację po świątecznej gali, aby uzyskać ponadczasowy styl.</div>',
+     '<div class="ju">100% tencel, celuloza drzewna, barwiony przy użyciu barwników z certyfikatem GOTS z certyfikatem GOTS, wyprodukowany w Turcji. Prać na delikatnym cyklu w 30 stopniach, prasować na niskim poziomie i nie suszyć w suszarce. Nasze tkaniny są trwałe i nie wymagają czyszczenia na sucho. Prasowac na lewej stronie.</div>'
+   ),
+   (
+     'holly-bracelet',
+     'Available',
+     true,
+     'Holly Bracelet',
+     'Dusty Rose',
+     49,
+     '<div class="ju">MYNA’s hand made bracelet HOLLY it’s perfect complement for any occasion, and perfect gift idea for you loved ones. HOLLY is ethically made by Anna, hand crafted with love, from high quality glass beeds. Designed specially for MYNA to match all our designs for versatile style. Subtle colors with variety of loved shades of nude, dusty pink and golden accents perfectly will match any outfit. HOLLY bracelet looks stunning pared together with HELIA bracelet and with our new MARY festive dress.</div>',
+     '<div class="ju">High quality glass beeds from Japan, Miyuki. They have thin walls and are light weight, giving a beautifully uniform finish to our design.</div>',
+     'holly-bracelet-1.jpg',
+     'holly-bracelet-2.jpg',
+     'holly-bracelet-3.jpg',
+     'holly-bracelet-4.jpg',
+     NULL,
+     NULL,
+     NULL,
+     NULL,
+     NULL,
+     'Holly Bransoletka',
+     '<div class="ju">Nasza ręcznie robiona bransoletka HOLLY jest doskonałym uzupełnieniem na każdą okazję i idealnym pomysłem na prezent dla najbliższych. HOLLY jest robiona etycznie przez Annę, ręcznie i starannie wykonana, z wysokiej jakości szklanych koralików. Zaprojektowana specjalnie dla MYNA, tak aby pasowała do wszystkich naszych projektów, zapewniając wszechstronny styl. Subtelna kolorystyka z rozmaitymi odcieniami, zgaszonego różu i złotych akcentów idealnie dopasuje się do każdej stylizacji. Bransoletka HOLLY prezentuje się znakomicie w zestawieniu z bransoletką HELIA i naszą nową sukienką MARY.</div>',
+     '<div class="ju">Wysokiej jakości szklane koraliki z Japonii, Miyuki. Mają cienkie ścianki i są lekkie, co zapewnia jednolite wykończenie branzoletki.</div>'
+   ),
+   (
+     'helia-bracelet',
+     'Available',
+     true,
+     'Helia Bracelet',
+     'Light Rose',
+     39,
+     '<div class="ju">MYNA’s hand made bracelet HELIA it’s perfect complement for any occasion, and perfect gift idea for you loved ones. HELIA is ethically made by Anna, hand crafted with love, from high quality glass beeds. Designed specially for MYNA to match all our designs for versatile style. Subtle colors with variety of loved shades of nude, dusty pink and golden accents perfectly will match any outfit. HELIA bracelet looks stunning pared together with HOLLY bracelet and with our new MARY festive dress.</div>',
+     '<div class="ju">High quality glass beeds from Japan, Miyuki. They have thin walls and are light weight, giving a beautifully uniform finish to our design.</div>',
+     'helia-bracelet-1.jpg',
+     'helia-bracelet-2.jpg',
+     'helia-bracelet-3.jpg',
+     'helia-bracelet-4.jpg',
+     NULL,
+     NULL,
+     NULL,
+     NULL,
+     NULL,
+     'Helia Bransoletka',
+     '<div class="ju">Nasza ręcznie robiona bransoletka HELIA jest doskonałym uzupełnieniem na każdą okazję i idealnym pomysłem na prezent dla najbliższych. HELIA jest robiona etycznie przez Annę, ręcznie i starannie wykonana, z wysokiej jakości szklanych koralików. Zaprojektowana specjalnie dla MYNA, tak aby pasowała do wszystkich naszych projektów, zapewniając wszechstronny styl. Subtelna kolorystyka z rozmaitymi odcieniami, zgaszonego różu i złotych akcentów idealnie dopasuje się do każdej stylizacji. Bransoletka HELIA prezentuje się znakomicie w zestawieniu z bransoletką HOLLY i naszą nową sukienką MARY.</div>',
+     '<div class="ju">Wysokiej jakości szklane koraliki z Japonii, Miyuki. Mają cienkie ścianki i są lekkie, co zapewnia jednolite wykończenie branzoletki.</div>'
+   )
+   ON CONFLICT (idname) DO UPDATE SET
+   availability            = EXCLUDED.availability,
+   is_one_size             = EXCLUDED.is_one_size,
+   productname             = EXCLUDED.productname,
+   productcolor            = EXCLUDED.productcolor,
+   productprice            = EXCLUDED.productprice,
+   desclong                = EXCLUDED.desclong,
+   comp_care               = EXCLUDED.comp_care,
+   pic1                    = EXCLUDED.pic1,
+   pic2                    = EXCLUDED.pic2,
+   pic3                    = EXCLUDED.pic3,
+   pic4                    = EXCLUDED.pic4,
+   pic5                    = EXCLUDED.pic5,
+   pic6                    = EXCLUDED.pic6,
+   pic7                    = EXCLUDED.pic7,
+   pic8                    = EXCLUDED.pic8,
+   pic9                    = EXCLUDED.pic9,
+   name_pl                 = EXCLUDED.name_pl,
+   desc_pl                 = EXCLUDED.desc_pl,
+   composition_and_care_pl = EXCLUDED.composition_and_care_pl
+   ;
+
+
+INSERT INTO public.stock
+ (idname,           xs,   s,    m,    ml,   l,    one_size) VALUES
+ ('mary-dress',     5,    5,    5,    5,    5,    NULL),
+ ('holly-bracelet', NULL, NULL, NULL, NULL, NULL, 5),
+ ('helia-bracelet', NULL, NULL, NULL, NULL, NULL, 5)
+ ON CONFLICT (idname) DO UPDATE SET
+ xs       = EXCLUDED.xs,
+ s        = EXCLUDED.s,
+ m        = EXCLUDED.m,
+ ml       = EXCLUDED.ml,
+ l        = EXCLUDED.l,
+ one_size = EXCLUDED.one_size
+ ;
