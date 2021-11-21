@@ -12,8 +12,8 @@ import { AppController } from './app.controller';
 import { catchAllOmiter } from './app.middleware';
 import { AppConfig } from './config/app.config';
 import { EmailModule } from './email/email.module';
-import { SessionMiddleware } from './session.middleware';
 import { ClientModule } from './client/client.module';
+import { SessionModule } from './session/session.module';
 
 @Module({
   imports: [
@@ -33,11 +33,12 @@ import { ClientModule } from './client/client.module';
     UserModule,
     EmailModule,
     ClientModule,
+    SessionModule,
   ],
   controllers: [AppController],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(catchAllOmiter, SessionMiddleware).forRoutes('*');
+    consumer.apply(catchAllOmiter).forRoutes('*');
   }
 }

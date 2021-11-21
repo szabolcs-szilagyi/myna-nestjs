@@ -1,29 +1,32 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware, OnModuleDestroy } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as session from 'express-session';
-import * as PgSession from 'connect-pg-simple';
-import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'pg';
+import { TypeormStore } from 'typeorm-store';
+import { SessionRepository } from './session.repository';
 
 const {
   NODE_ENV,
   SESSION_SECRET = 'my-super-secret-dev-secret-66',
 } = process.env;
 
-const devEnv = new Set([undefined, 'dev', 'development']);
+const devEnv = new Set([undefined, 'dev', 'development', 'test']);
 const isDevelopmentEnv = devEnv.has(NODE_ENV);
-const cookieDomain = isDevelopmentEnv ? 'localhost' : 'mynalabel.com';
+const cookieDomain = isDevelopmentEnv ? undefined : 'mynalabel.com';
 
 @Injectable()
 export class SessionMiddleware implements NestMiddleware {
-  constructor(@InjectConnection() private connection: Connection) {}
+  private readonly store: TypeormStore;
+  constructor(
+    private readonly sessionRepo: SessionRepository,
+  ) {
+    this.store = new TypeormStore({
+      repository: this.sessionRepo,
+    });
+  }
 
   use(req: Request, res: Response, next: NextFunction) {
-    const SessionStorage = new PgSession(session);
     session({
-      store: new SessionStorage({
-        pool: this.connection,
-      }),
+      store: this.store,
       secret: SESSION_SECRET,
       resave: false,
       saveUninitialized: true,
@@ -35,5 +38,9 @@ export class SessionMiddleware implements NestMiddleware {
         secure: !isDevelopmentEnv,
       },
     })(req, res, next);
+  }
+
+  onModuleDestroy() {
+    this.store.clearExpirationInterval();
   }
 }

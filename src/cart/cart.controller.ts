@@ -68,7 +68,7 @@ export class CartController {
       await this.cartService.removeProductFromCart(id, sessionToken, null);
       return { success: '1' };
     } else {
-      await this.cartService.removeProductFromCart(id, sessionToken, sessionId);
+      await this.cartService.removeProductFromCart(id, null, sessionId);
     }
   }
 

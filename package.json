@@ -29,7 +29,6 @@
     "@nestjs/typeorm": "7.1.5",
     "class-transformer": "0.4.0",
     "class-validator": "0.13.1",
-    "connect-pg-simple": "7.0.0",
     "express-session": "1.17.2",
     "got": "11.8.2",
     "lodash": "4.17.21",
@@ -39,7 +38,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
-    "typeorm": "0.2.32"
+    "typeorm": "0.2.32",
+    "typeorm-store": "2.0.0"
   },
   "devDependencies": {
     "@nestjs/schematics": "^7.3.0",

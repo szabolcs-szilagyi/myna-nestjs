@@ -16,9 +16,15 @@ import { AddressService } from '../address/address.service';
 import { ProductModule } from '../product/product.module';
 import { ProductRepository } from '../product/product.repository';
 import { AddressEntity } from '../address/entities/address.entity';
-import { TestModule } from '../test.module';
+import { SessionModule } from '../session/session.module';
 
 const sandbox = createSandbox();
+
+function getSessionIdFromCookie(cookie: string) {
+  const decoded = decodeURIComponent(cookie);
+
+  return decoded.match(/:(.*?)\./)[1];
+}
 
 describe('CartController', () => {
   let app: INestApplication;
@@ -38,7 +44,6 @@ describe('CartController', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
-        TestModule,
         TypeOrmModule.forRoot({
           type: 'postgres',
           url: 'postgres://myna_test:test@127.0.0.1/myna_test',
@@ -50,6 +55,7 @@ describe('CartController', () => {
           StockRepository,
           PurchasedRepository,
         ]),
+        SessionModule,
         TokenModule,
         AddressModule,
         ProductModule, // needed so that we can add products for test
@@ -85,7 +91,9 @@ describe('CartController', () => {
 
   describe('POST cart', () => {
     it('requires session and product details', () => {
-      return agent(app.getHttpServer()).post('/cart').expect(400);
+      return agent(app.getHttpServer())
+        .post('/cart')
+        .expect(400);
     });
 
     it('able to add product using session token', async () => {
@@ -125,10 +133,12 @@ describe('CartController', () => {
 
   describe('DELETE cart/:id', () => {
     it('requires session and product id', () => {
-      return agent(app.getHttpServer()).delete('/cart/0').expect(400);
+      return agent(app.getHttpServer())
+        .delete('/cart/0')
+        .expect(400);
     });
 
-    it('able to remove product from cart', async () => {
+    it('able to remove product from cart using token', async () => {
       const sessionToken = 'randomles1324324';
       await agent(app.getHttpServer())
         .post('/cart')
@@ -145,6 +155,28 @@ describe('CartController', () => {
         .delete('/cart/' + cartItemRecord.id)
         .set('session-token', sessionToken)
         .expect(200, { success: '1' });
+    });
+
+    it('able to remove product from cart using session cookie', async () => {
+      const requestAgent = agent(app.getHttpServer());
+      const response = await requestAgent
+        .post('/cart')
+        .send(<AddToCartDto>{
+          idName: 'sotest',
+          size: 'XL',
+        })
+        .expect(201);
+
+      const cookie = response.headers['set-cookie'];
+      const sessionId = getSessionIdFromCookie(cookie[0]);
+      const cartItemRecord = await cartRepo.findOne({ session: sessionId });
+
+      await requestAgent.delete('/cart/' + cartItemRecord.id).expect(200);
+
+      const cartItemRecordAfter = await cartRepo.findOne({
+        session: sessionId,
+      });
+      expect(cartItemRecordAfter).toBeFalsy();
     });
   });
 
@@ -388,7 +420,9 @@ describe('CartController', () => {
 
   describe('GET total', () => {
     it('returns error if session token not given', () => {
-      return agent(app.getHttpServer()).get('/cart/total').expect(400);
+      return agent(app.getHttpServer())
+        .get('/cart/total')
+        .expect(400);
     });
 
     it('will calculate with zero delivery if email not set', async () => {
