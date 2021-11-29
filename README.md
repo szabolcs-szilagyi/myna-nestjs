@@ -43,3 +43,12 @@ Steps:
      --path /cloudfront/myna/
    ```
 4. change CloudFront to use the new cert via the web ui - `https://console.aws.amazon.com/cloudfront/v3/home?#/distributions/E3QL6B6GNJEOCC`
+
+## Migration steps to cookie based session
+
+- [X] cart.controller
+- [ ] create new module for writing and retrieving user data from the session
+      storage (name, address, email, phone, comment for delivery)
+- [ ] implement purchase logging with the new way
+- [ ] deploy without changing front-end
+- [ ] start to migrate front-end to the new ways
