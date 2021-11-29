@@ -34,18 +34,38 @@ export class CartRepository extends Repository<CartEntity> {
   getProductReservation(
     moreAccurateAvailablityDto: MoreAccurateAvailablityDto,
   ) {
-    const { sessionToken, idName, size } = moreAccurateAvailablityDto;
-    return this.find({
+    const {
       sessionToken,
+      sessionId,
       idName,
-      size: size === 'oneSize' ? 'onesize' : size,
-    });
+      size,
+    } = moreAccurateAvailablityDto;
+    if (sessionToken) {
+      return this.find({
+        sessionToken,
+        idName,
+        size: size === 'oneSize' ? 'onesize' : size,
+      });
+    } else {
+      return this.find({
+        session: sessionId,
+        idName,
+        size: size === 'oneSize' ? 'onesize' : size,
+      });
+    }
   }
 
-  getItemsWithDetails(sessionToken: string, filter: any) {
-    return this.find({
-      where: { ...filter, sessionToken },
-      relations: ['product'],
-    });
+  getItemsWithDetails(sessionToken: string, sessionId: string, filter: any) {
+    if (sessionToken) {
+      return this.find({
+        where: { ...filter, sessionToken },
+        relations: ['product'],
+      });
+    } else {
+      return this.find({
+        where: { ...filter, session: sessionId },
+        relations: ['product'],
+      });
+    }
   }
 }

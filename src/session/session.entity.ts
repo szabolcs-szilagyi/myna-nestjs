@@ -11,4 +11,10 @@ export class Session implements SessionEntity {
 
   @Column()
   data: string;
+
+  setFieldInData(field: string, value: any): void {
+    this.data = JSON.stringify(
+      Object.assign(JSON.parse(this.data), { [field]: value }),
+    );
+  }
 }

@@ -5,12 +5,8 @@ import { SessionMiddleware } from './session.middleware';
 import { SessionRepository } from './session.repository';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([SessionRepository])
-  ],
-  providers: [
-    SessionMiddleware,
-  ]
+  imports: [TypeOrmModule.forFeature([SessionRepository])],
+  providers: [SessionMiddleware],
 })
 export class SessionModule {
   configure(consumer: MiddlewareConsumer) {

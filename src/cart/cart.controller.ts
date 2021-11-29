@@ -22,6 +22,7 @@ import { MoreAccurateAvailablityDto } from './dto/more-accurate-availablity.dto'
 import { ProductWithSizeDto } from './dto/product-with-size.dto';
 import { CartEntity } from './entities/cart.entity';
 import { promisify } from 'util';
+import { omit } from 'lodash/fp';
 
 @Controller('cart')
 export class CartController {
@@ -77,8 +78,7 @@ export class CartController {
     @SessionId() sessionId: string,
     @PurifiedToken('session-token') sessionToken: string,
   ) {
-    if (!sessionToken) throw new BadRequestException();
-    let products: CartEntity[];
+    let products: Omit<CartEntity, 'session' | 'sessionToken'>[];
 
     if (sessionToken) {
       products = await this.cartService.getProductsInCart(sessionToken, null);
@@ -86,16 +86,26 @@ export class CartController {
       products = await this.cartService.getProductsInCart(null, sessionId);
     }
 
+    products = <Omit<CartEntity, 'session' | 'sessionToken'>[]>(
+      products.map(omit(['session', 'sessionToken']))
+    );
+
     return products;
   }
 
   @Post('products-paid')
-  async productsPaid(@PurifiedToken('session-token') sessionToken: string) {
-    if (!sessionToken) throw new BadRequestException();
-    const email = await this.tokenService.getEmailBySessionToken(sessionToken);
+  async productsPaid(
+    @Session() session: any,
+    @SessionId() sessionId: string,
+    @PurifiedToken('session-token') sessionToken: string,
+  ) {
+    const getEmail = sessionToken
+      ? () => this.tokenService.getEmailBySessionToken(sessionToken)
+      : () => Promise.resolve(session.email);
+    const email = await getEmail();
 
     if (!email) throw new BadRequestException();
-    return this.cartService.setProductsPaid(sessionToken, email);
+    return this.cartService.setProductsPaid(sessionToken, sessionId, email);
   }
 
   @Get('availability')
@@ -113,6 +123,7 @@ export class CartController {
 
   @Get('more-accurate-availability')
   async getMoreAccurateAvailability(
+    @SessionId() sessionId: string,
     @PurifiedToken('session-token') sessionToken: string,
     @Query()
     moreAccurateAvailablityDto: Omit<
@@ -122,6 +133,7 @@ export class CartController {
   ) {
     const availability = await this.cartService.getMoreAccurateAvailability({
       sessionToken,
+      sessionId,
       ...moreAccurateAvailablityDto,
     });
 
@@ -130,23 +142,33 @@ export class CartController {
 
   @Get('total')
   async getTotal(
+    @Session() session: any,
+    @SessionId() sessionId: string,
     @PurifiedToken('session-token') sessionToken: string,
     @PurifiedToken('coupon') coupon: string,
   ) {
-    if (!sessionToken) throw new BadRequestException();
-
-    const email = await this.tokenService.getEmailBySessionToken(sessionToken);
-
     let deliveryCost: number;
-    if (email && email !== 'nodata') {
-      const address = await this.addressSevice.getAddressDataByEmail(email);
-      deliveryCost = address
-        ? this.addressSevice.getDeliveryCost(address.country)
-        : 0;
+    let country: string;
+
+    if (sessionToken) {
+      const email = await this.tokenService.getEmailBySessionToken(
+        sessionToken,
+      );
+      if (email && email !== 'nodata') {
+        const address = await this.addressSevice.getAddressDataByEmail(email);
+        country = address?.country;
+      }
     } else {
-      deliveryCost = 0;
+      country = session.country;
     }
-    const cartValue = await this.cartService.getCartValue(sessionToken, coupon);
+
+    deliveryCost = country ? this.addressSevice.getDeliveryCost(country) : 0;
+
+    const cartValue = await this.cartService.getCartValue(
+      sessionToken,
+      sessionId,
+      coupon,
+    );
 
     return {
       topay: cartValue + deliveryCost,

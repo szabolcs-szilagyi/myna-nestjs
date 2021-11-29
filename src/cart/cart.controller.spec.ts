@@ -17,6 +17,7 @@ import { ProductModule } from '../product/product.module';
 import { ProductRepository } from '../product/product.repository';
 import { AddressEntity } from '../address/entities/address.entity';
 import { SessionModule } from '../session/session.module';
+import { SessionRepository } from '../session/session.repository';
 
 const sandbox = createSandbox();
 
@@ -181,13 +182,7 @@ describe('CartController', () => {
   });
 
   describe('GET products-in-cart', () => {
-    it('requires session-token', () => {
-      return agent(app.getHttpServer())
-        .get('/cart/products-in-cart')
-        .expect(400);
-    });
-
-    it('returns the correct products', async () => {
+    it('returns the correct products using session token', async () => {
       const sessionToken = 'rromelslsdkfe';
       await agent(app.getHttpServer())
         .post('/cart')
@@ -217,15 +212,46 @@ describe('CartController', () => {
           assert.match(body[0], { idName: 'first', size: 'L' });
         });
     });
+
+    it('returns the correct products using session cookie', async () => {
+      const agentInstance = agent(app.getHttpServer());
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{
+          idName: 'first',
+          size: 'L',
+        })
+        .expect(201);
+
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{
+          idName: 'second',
+          size: 'L',
+        })
+        .expect(201);
+
+      await cartRepo.update({ idName: 'second' }, { paid: true });
+
+      await agentInstance
+        .get('/cart/products-in-cart')
+        .expect(200)
+        .then(({ body }) => {
+          assert.match(
+            body[0],
+            match({
+              idName: 'first',
+              size: 'L',
+            }),
+          );
+          expect(body[0].session).toBeUndefined();
+          expect(body[0].sessionToken).toBeUndefined();
+          expect(body).toHaveLength(1);
+        });
+    });
   });
 
   describe('POST products-paid', () => {
-    it('requires session-token', () => {
-      return agent(app.getHttpServer())
-        .get('/cart/products-in-cart')
-        .expect(400);
-    });
-
     it('reduces stock levels', async () => {
       tokenService.getEmailBySessionToken.callsFake(
         async () => 'slkdjfslkdjfls',
@@ -253,7 +279,7 @@ describe('CartController', () => {
       ]);
     });
 
-    it('set cart items that they have been paid', async () => {
+    it('set cart items that they have been paid using session token', async () => {
       tokenService.getEmailBySessionToken.callsFake(
         async () => 'slkdjfslkdjfls',
       );
@@ -283,6 +309,37 @@ describe('CartController', () => {
       ]);
     });
 
+    it('set cart items that they have been paid using session cookie', async () => {
+      const agentInstance = agent(app.getHttpServer());
+      const result = await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'first2', size: 's' })
+        .expect(201);
+
+      const session = getSessionIdFromCookie(result.headers['set-cookie'][0]);
+
+      const sessionRepo = app.get(SessionRepository) as SessionRepository;
+      const sessionObj = await sessionRepo.findOne({ id: session });
+      sessionObj.setFieldInData('email', 'tests');
+
+      await sessionRepo.save(sessionObj);
+
+      await stockRepo.insert({ idName: 'first2', s: 5, m: 5 });
+
+      await agentInstance.post('/cart/products-paid').expect(201);
+
+      const cartContent = await cartRepo.getProductsInCart(null, session);
+      const rawCartContent = await cartRepo.find({
+        where: { session },
+        order: { id: 'ASC' },
+      });
+
+      expect(cartContent.length).toEqual(0);
+      assert.match(rawCartContent, [
+        match({ session, paid: true, idName: 'first2' }),
+      ]);
+    });
+
     it('records the transaction in the purchased repo', async () => {
       tokenService.getEmailBySessionToken.callsFake(
         async () => 'slkdjfslkdjfls',
@@ -306,6 +363,8 @@ describe('CartController', () => {
       assert.calledOnce(tokenService.getEmailBySessionToken);
       expect(purchaseRecords.length).toEqual(1);
     });
+
+    it.todo('records transaction in the log');
   });
 
   describe('GET availability', () => {
@@ -366,7 +425,7 @@ describe('CartController', () => {
         .expect(200, { availability: 5 });
     });
 
-    it('reduces availability with the number of products in cart', async () => {
+    it('reduces availability with the number of products in cart using session token', async () => {
       const sessionToken = '12312312434233e';
       await stockRepo.insert({
         idName: 'exist',
@@ -392,7 +451,33 @@ describe('CartController', () => {
         .expect(200, { availability: 64 });
     });
 
-    it('will not reduce availability if different session is given', async () => {
+    it('reduces availability with the number of products in cart using session cookie', async () => {
+      await stockRepo.insert({
+        idName: 'exist',
+        xs: 1,
+        s: 2,
+        m: 3,
+        ml: 4,
+        l: 5,
+        oneSize: 66,
+      });
+      const agentInstance = agent(app.getHttpServer());
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'exist', size: 'onesize' })
+        .expect(201);
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'exist', size: 'onesize' })
+        .expect(201);
+
+      return agentInstance
+        .get('/cart/more-accurate-availability')
+        .query({ idName: 'exist', size: 'oneSize' })
+        .expect(200, { availability: 64 });
+    });
+
+    it('will not reduce availability if different session token is given', async () => {
       await stockRepo.insert({
         idName: 'exist',
         xs: 1,
@@ -416,16 +501,33 @@ describe('CartController', () => {
         .query({ idName: 'exist', size: 'oneSize' })
         .expect(200, { availability: 66 });
     });
+
+    it('will not reduce availability if different session cookie is given', async () => {
+      await stockRepo.insert({
+        idName: 'exist',
+        xs: 1,
+        s: 2,
+        m: 3,
+        ml: 4,
+        l: 5,
+        oneSize: 66,
+      });
+
+      await agent(app.getHttpServer())
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'exist', size: 'onesize' })
+        .expect(201);
+
+      return agent(app.getHttpServer())
+        .get('/cart/more-accurate-availability')
+        .set('session-token', 'somethingelse')
+        .query({ idName: 'exist', size: 'oneSize' })
+        .expect(200, { availability: 66 });
+    });
   });
 
   describe('GET total', () => {
-    it('returns error if session token not given', () => {
-      return agent(app.getHttpServer())
-        .get('/cart/total')
-        .expect(400);
-    });
-
-    it('will calculate with zero delivery if email not set', async () => {
+    it('will calculate with zero delivery if email not set using session token', async () => {
       await productRepo.insert({
         idName: 'my-awesome-product',
         availability: 'Available',
@@ -455,7 +557,44 @@ describe('CartController', () => {
       assert.notCalled(addressService.getDeliveryCost);
     });
 
-    it('will calculate with zero delivery if email is `nodata`', async () => {
+    it('will calculate with zero delivery if email not set using cookie', async () => {
+      await productRepo.insert({
+        idName: 'my-awesome-product',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My AWESOME product',
+        color: 'black ofcourse...',
+        price: 222,
+        description: 'oh yeah, buy this',
+        compCare: 'handwash only!',
+        pic1: 'that.png',
+      });
+
+      const agentInstance = agent(app.getHttpServer());
+      const result = await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-awesome-product', size: 's' })
+        .expect(201);
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-awesome-product', size: 's' })
+        .expect(201);
+
+      const session = getSessionIdFromCookie(result.headers['set-cookie'][0]);
+
+      const sessionRepo = app.get(SessionRepository) as SessionRepository;
+      const sessionObj = await sessionRepo.findOne({ id: session });
+      sessionObj.setFieldInData('email', 'tests');
+      await sessionRepo.save(sessionObj);
+
+      await agentInstance
+        .get('/cart/total')
+        .expect(200, { topay: 444, delivery: 0, products: 444 });
+
+      assert.notCalled(addressService.getDeliveryCost);
+    });
+
+    it('will calculate with zero delivery if email is `nodata` using session token', async () => {
       await productRepo.insert({
         idName: 'my-awesome-product',
         availability: 'Available',
@@ -485,7 +624,46 @@ describe('CartController', () => {
       assert.notCalled(addressService.getDeliveryCost);
     });
 
-    it('returns correct sum', async () => {
+    it('will calculate with zero delivery if email is `nodata` using session cookie', async () => {
+      await productRepo.insert({
+        idName: 'my-awesome-product',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My AWESOME product',
+        color: 'black ofcourse...',
+        price: 222,
+        description: 'oh yeah, buy this',
+        compCare: 'handwash only!',
+        pic1: 'that.png',
+      });
+
+      const agentInstance = agent(app.getHttpServer());
+
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-awesome-product', size: 's' })
+        .expect(201);
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-awesome-product', size: 's' })
+        .expect(201);
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-awesome-product', size: 's' })
+        .expect(201);
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-awesome-product', size: 's' })
+        .expect(201);
+
+      await agentInstance
+        .get('/cart/total')
+        .expect(200, { topay: 888, delivery: 0, products: 888 });
+
+      assert.notCalled(addressService.getDeliveryCost);
+    });
+
+    it('returns correct sum using session token', async () => {
       await productRepo.insert({
         idName: 'my-awesome-product',
         availability: 'Available',
@@ -517,7 +695,45 @@ describe('CartController', () => {
         .expect(200, { topay: 232, delivery: 10, products: 222 });
     });
 
-    it('returns correct sum even if the same session already bought items', async () => {
+    it('returns correct sum using session cookie', async () => {
+      await productRepo.insert({
+        idName: 'my-awesome-product',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My AWESOME product',
+        color: 'black ofcourse...',
+        price: 111,
+        description: 'oh yeah, buy this',
+        compCare: 'handwash only!',
+        pic1: 'that.png',
+      });
+
+      const agentInstance = agent(app.getHttpServer());
+      const result = await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-awesome-product', size: 's' })
+        .expect(201);
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-awesome-product', size: 's' })
+        .expect(201);
+
+      const session = getSessionIdFromCookie(result.headers['set-cookie'][0]);
+
+      const sessionRepo = app.get(SessionRepository) as SessionRepository;
+      const sessionObj = await sessionRepo.findOne({ id: session });
+      sessionObj.setFieldInData('email', 'tests');
+      sessionObj.setFieldInData('country', 'Poland');
+      await sessionRepo.save(sessionObj);
+
+      addressService.getDeliveryCost.returns(10);
+
+      return agentInstance
+        .get('/cart/total')
+        .expect(200, { topay: 232, delivery: 10, products: 222 });
+    });
+
+    it('returns correct sum even if the same session already bought items (token)', async () => {
       await productRepo.insert({
         idName: 'my-good-product',
         availability: 'Available',
@@ -556,7 +772,54 @@ describe('CartController', () => {
         .expect(200, { topay: 232, delivery: 10, products: 222 });
     });
 
-    it('ignores invalid coupon', async () => {
+    it('returns correct sum even if the same session already bought items (cookie)', async () => {
+      await productRepo.insert({
+        idName: 'my-good-product',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My AWESOME product',
+        color: 'black ofcourse...',
+        price: 111,
+        description: 'oh yeah, buy this',
+        compCare: 'handwash only!',
+        pic1: 'that.png',
+      });
+
+      const agentInstance = agent(app.getHttpServer());
+      const result = await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-good-product', size: 's' })
+        .expect(201);
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-good-product', size: 's' })
+        .expect(201);
+
+      const session = getSessionIdFromCookie(result.headers['set-cookie'][0]);
+
+      await cartRepo.insert({
+        amount: 2,
+        idName: 'my-good-product',
+        paid: true,
+        session,
+        sessionToken: session,
+        size: 's',
+      });
+
+      const sessionRepo = app.get(SessionRepository) as SessionRepository;
+      const sessionObj = await sessionRepo.findOne({ id: session });
+      sessionObj.setFieldInData('email', 'tests');
+      sessionObj.setFieldInData('country', 'Poland');
+      await sessionRepo.save(sessionObj);
+
+      addressService.getDeliveryCost.returns(10);
+
+      return agentInstance
+        .get('/cart/total')
+        .expect(200, { topay: 232, delivery: 10, products: 222 });
+    });
+
+    it('ignores invalid coupon (token)', async () => {
       const sessionToken = '654323456543';
       await productRepo.insert({
         idName: 'my-awesome-product',
@@ -590,7 +853,46 @@ describe('CartController', () => {
         .expect(200, { topay: 676, delivery: 10, products: 666 });
     });
 
-    it('reduces the price if coupon is valid', async () => {
+    it('ignores invalid coupon (cookie)', async () => {
+      await productRepo.insert({
+        idName: 'my-awesome-product',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My AWESOME product',
+        color: 'black ofcourse...',
+        price: 333,
+        description: 'oh yeah, buy this',
+        compCare: 'handwash only!',
+        pic1: 'that.png',
+      });
+
+      const agentInstance = agent(app.getHttpServer());
+      const result = await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-awesome-product', size: 's' })
+        .expect(201);
+      await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-awesome-product', size: 's' })
+        .expect(201);
+
+      const session = getSessionIdFromCookie(result.headers['set-cookie'][0]);
+
+      const sessionRepo = app.get(SessionRepository) as SessionRepository;
+      const sessionObj = await sessionRepo.findOne({ id: session });
+      sessionObj.setFieldInData('email', 'tests');
+      sessionObj.setFieldInData('country', 'Poland');
+      await sessionRepo.save(sessionObj);
+
+      addressService.getDeliveryCost.returns(10);
+
+      return agentInstance
+        .get('/cart/total')
+        .set('coupon', 'my-fake-coupon20')
+        .expect(200, { topay: 676, delivery: 10, products: 666 });
+    });
+
+    it('reduces the price if coupon is valid (token)', async () => {
       const sessionToken = '654323456543';
       await productRepo.insert({
         idName: 'my-awesome-product',
@@ -620,6 +922,41 @@ describe('CartController', () => {
       return agent(app.getHttpServer())
         .get('/cart/total')
         .set('session-token', sessionToken)
+        .set('coupon', 'mynafriend10')
+        .expect(200, { topay: 100, delivery: 10, products: 90 });
+    });
+
+    it('reduces the price if coupon is valid (cookie)', async () => {
+      await productRepo.insert({
+        idName: 'my-awesome-product',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My AWESOME product',
+        color: 'black ofcourse...',
+        price: 100,
+        description: 'oh yeah, buy this',
+        compCare: 'handwash only!',
+        pic1: 'that.png',
+      });
+
+      const agentInstance = agent(app.getHttpServer());
+      const result = await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'my-awesome-product', size: 's' })
+        .expect(201);
+
+      const session = getSessionIdFromCookie(result.headers['set-cookie'][0]);
+
+      const sessionRepo = app.get(SessionRepository) as SessionRepository;
+      const sessionObj = await sessionRepo.findOne({ id: session });
+      sessionObj.setFieldInData('email', 'tests');
+      sessionObj.setFieldInData('country', 'Poland');
+      await sessionRepo.save(sessionObj);
+
+      addressService.getDeliveryCost.returns(10);
+
+      return agentInstance
+        .get('/cart/total')
         .set('coupon', 'mynafriend10')
         .expect(200, { topay: 100, delivery: 10, products: 90 });
     });

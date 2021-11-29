@@ -7,6 +7,7 @@ import { PurchasedRepository } from './purchased.repository';
 import { StockEntity } from './entities/stock.entity';
 import { MoreAccurateAvailablityDto } from './dto/more-accurate-availablity.dto';
 import { sumBy } from 'lodash';
+import { CartEntity } from './entities/cart.entity';
 
 type Coupon = 'mynafriend10' | 'mynagift15';
 
@@ -67,7 +68,11 @@ export class CartService {
     }
   }
 
-  async setProductsPaid(sessionToken: string, email: string) {
+  async setProductsPaid(
+    sessionToken: string | null,
+    sessionId: string,
+    email: string,
+  ) {
     const queryRunner = this.connection.createQueryRunner();
 
     await queryRunner.connect();
@@ -79,12 +84,21 @@ export class CartService {
       PurchasedRepository,
     );
     try {
-      const products = await cartRepo.getProductsInCart(sessionToken, null);
+      let products: CartEntity[];
+      if (sessionToken) {
+        products = await cartRepo.getProductsInCart(sessionToken, null);
+      } else {
+        products = await cartRepo.getProductsInCart(null, sessionId);
+      }
       for (const product of products) {
         await stockRepo.reduceStock(product.idName, product.size);
         await cartRepo.setProductPaid(product);
       }
-      await purchasedRepo.insert({ email, sessionToken, time: new Date() });
+      if (sessionToken) {
+        await purchasedRepo.insert({ email, sessionToken, time: new Date() });
+      } else {
+        // TODO have to implement the log
+      }
 
       await queryRunner.commitTransaction();
     } catch (e) {
@@ -116,14 +130,15 @@ export class CartService {
     return available?.[moreAccurateAvailablityDto.size] - reservationSum;
   }
 
-  async getCartValue(sessionToken: string, coupon: string) {
+  async getCartValue(sessionToken: string, sessionId: string, coupon: string) {
     const cartItems = await this.cartRepository.getItemsWithDetails(
       sessionToken,
+      sessionId,
       { paid: false },
     );
     const productTotal = sumBy(
       cartItems,
-      (item) => item.amount * item.product.price,
+      item => item.amount * item.product.price,
     );
     const withCoupon = this.applyCoupon(productTotal, <Coupon>coupon);
 
