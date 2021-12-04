@@ -47,7 +47,7 @@ Steps:
 ## Migration steps to cookie based session
 
 - [X] cart.controller
-- [ ] create new module for writing and retrieving user data from the session
+- [x] create new module for writing and retrieving user data from the session
       storage (name, address, email, phone, comment for delivery)
 - [ ] implement purchase logging with the new way
 - [ ] deploy without changing front-end

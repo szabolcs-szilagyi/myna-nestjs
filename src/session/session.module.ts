@@ -3,10 +3,12 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SessionMiddleware } from './session.middleware';
 import { SessionRepository } from './session.repository';
+import { SessionController } from './session.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([SessionRepository])],
   providers: [SessionMiddleware],
+  controllers: [SessionController],
 })
 export class SessionModule {
   configure(consumer: MiddlewareConsumer) {
