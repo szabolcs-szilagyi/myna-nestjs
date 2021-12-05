@@ -39,9 +39,7 @@ describe('SessionController', () => {
 
   describe('POST save-user-details', () => {
     it('will not save empty user data', () => {
-      return agent(app.getHttpServer())
-        .post('/session')
-        .expect(400);
+      return agent(app.getHttpServer()).post('/session').expect(400);
     });
 
     it('will not accept partial info', () => {

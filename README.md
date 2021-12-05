@@ -49,6 +49,6 @@ Steps:
 - [X] cart.controller
 - [x] create new module for writing and retrieving user data from the session
       storage (name, address, email, phone, comment for delivery)
-- [ ] implement purchase logging with the new way
+- [x] implement purchase logging with the new way
 - [ ] deploy without changing front-end
 - [ ] start to migrate front-end to the new ways

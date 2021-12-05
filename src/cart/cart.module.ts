@@ -7,6 +7,8 @@ import { StockRepository } from './stock.repository';
 import { PurchasedRepository } from './purchased.repository';
 import { TokenModule } from '../token/token.module';
 import { AddressModule } from '../address/address.module';
+import { PurchaseLogModule } from '../purchase-log/purchase-log.module';
+import { TransactionalRepositoryModule } from '../transactional-repository/transactional-repository.module';
 
 @Module({
   imports: [
@@ -15,8 +17,10 @@ import { AddressModule } from '../address/address.module';
       StockRepository,
       PurchasedRepository,
     ]),
+    TransactionalRepositoryModule,
     TokenModule,
     AddressModule,
+    PurchaseLogModule,
   ],
   controllers: [CartController],
   providers: [CartService],

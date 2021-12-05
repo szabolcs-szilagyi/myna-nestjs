@@ -18,6 +18,9 @@ import { ProductRepository } from '../product/product.repository';
 import { AddressEntity } from '../address/entities/address.entity';
 import { SessionModule } from '../session/session.module';
 import { SessionRepository } from '../session/session.repository';
+import { PurchaseLogService } from '../purchase-log/purchase-log.service';
+import { PurchaseLogModule } from '../purchase-log/purchase-log.module';
+import { TransactionalRepositoryModule } from '../transactional-repository/transactional-repository.module';
 
 const sandbox = createSandbox();
 
@@ -57,6 +60,8 @@ describe('CartController', () => {
           PurchasedRepository,
         ]),
         SessionModule,
+        TransactionalRepositoryModule,
+        PurchaseLogModule,
         TokenModule,
         AddressModule,
         ProductModule, // needed so that we can add products for test
@@ -68,6 +73,10 @@ describe('CartController', () => {
       .useValue(tokenService)
       .overrideProvider(AddressService)
       .useValue(addressService)
+      .overrideProvider(PurchaseLogService)
+      .useValue({
+        recordPurchase: sandbox.stub().resolves(),
+      })
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -92,9 +101,7 @@ describe('CartController', () => {
 
   describe('POST cart', () => {
     it('requires session and product details', () => {
-      return agent(app.getHttpServer())
-        .post('/cart')
-        .expect(400);
+      return agent(app.getHttpServer()).post('/cart').expect(400);
     });
 
     it('able to add product using session token', async () => {
@@ -134,9 +141,7 @@ describe('CartController', () => {
 
   describe('DELETE cart/:id', () => {
     it('requires session and product id', () => {
-      return agent(app.getHttpServer())
-        .delete('/cart/0')
-        .expect(400);
+      return agent(app.getHttpServer()).delete('/cart/0').expect(400);
     });
 
     it('able to remove product from cart using token', async () => {
@@ -364,7 +369,33 @@ describe('CartController', () => {
       expect(purchaseRecords.length).toEqual(1);
     });
 
-    it.todo('records transaction in the log');
+    it('records transaction in the log', async () => {
+      const agentInstance = agent(app.getHttpServer());
+      const result = await agentInstance
+        .post('/cart')
+        .send(<AddToCartDto>{ idName: 'first2', size: 's' })
+        .expect(201);
+
+      const session = getSessionIdFromCookie(result.headers['set-cookie'][0]);
+
+      const sessionRepo = app.get(SessionRepository) as SessionRepository;
+      const sessionObj = await sessionRepo.findOne({ id: session });
+      sessionObj.setFieldInData('email', 'tests');
+
+      const pruchaseLogService = app.get(
+        PurchaseLogService,
+      ) as PurchaseLogService;
+
+      await sessionRepo.save(sessionObj);
+
+      await stockRepo.insert({ idName: 'first2', s: 5, m: 5 });
+
+      await agentInstance.post('/cart/products-paid').expect(201);
+
+      assert.calledOnceWithMatch((pruchaseLogService as any).recordPurchase, [
+        match({ idName: 'first2', size: 's' }),
+      ]);
+    });
   });
 
   describe('GET availability', () => {

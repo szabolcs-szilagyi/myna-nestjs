@@ -23,6 +23,7 @@ import { ProductWithSizeDto } from './dto/product-with-size.dto';
 import { CartEntity } from './entities/cart.entity';
 import { promisify } from 'util';
 import { omit } from 'lodash/fp';
+import { TransactionalRepository } from '../transactional-repository/transactional-repository';
 
 @Controller('cart')
 export class CartController {
@@ -30,6 +31,7 @@ export class CartController {
     private readonly cartService: CartService,
     private readonly tokenService: TokenService,
     private readonly addressSevice: AddressService,
+    private readonly transactionalRepo: TransactionalRepository,
   ) {}
 
   @Post()
@@ -105,7 +107,10 @@ export class CartController {
     const email = await getEmail();
 
     if (!email) throw new BadRequestException();
-    return this.cartService.setProductsPaid(sessionToken, sessionId, email);
+    const result = await this.transactionalRepo.withTransaction(() =>
+      this.cartService.setProductsPaid(sessionToken, sessionId, email),
+    );
+    return result;
   }
 
   @Get('availability')
@@ -147,7 +152,6 @@ export class CartController {
     @PurifiedToken('session-token') sessionToken: string,
     @PurifiedToken('coupon') coupon: string,
   ) {
-    let deliveryCost: number;
     let country: string;
 
     if (sessionToken) {
@@ -162,7 +166,9 @@ export class CartController {
       country = session.country;
     }
 
-    deliveryCost = country ? this.addressSevice.getDeliveryCost(country) : 0;
+    const deliveryCost = country
+      ? this.addressSevice.getDeliveryCost(country)
+      : 0;
 
     const cartValue = await this.cartService.getCartValue(
       sessionToken,

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Connection } from 'typeorm';
 import { CartRepository } from './cart.repository';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { StockRepository } from './stock.repository';
@@ -8,6 +7,8 @@ import { StockEntity } from './entities/stock.entity';
 import { MoreAccurateAvailablityDto } from './dto/more-accurate-availablity.dto';
 import { sumBy } from 'lodash';
 import { CartEntity } from './entities/cart.entity';
+import { TransactionalRepository } from '../transactional-repository/transactional-repository';
+import { PurchaseLogService } from '../purchase-log/purchase-log.service';
 
 type Coupon = 'mynafriend10' | 'mynagift15';
 
@@ -16,7 +17,8 @@ export class CartService {
   constructor(
     private readonly cartRepository: CartRepository,
     private readonly stockRepository: StockRepository,
-    private readonly connection: Connection,
+    private readonly transactionalRepo: TransactionalRepository,
+    private readonly purchaseLogService: PurchaseLogService,
   ) {}
 
   async addProductToCart(
@@ -73,39 +75,29 @@ export class CartService {
     sessionId: string,
     email: string,
   ) {
-    const queryRunner = this.connection.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    const cartRepo = queryRunner.manager.getCustomRepository(CartRepository);
-    const stockRepo = queryRunner.manager.getCustomRepository(StockRepository);
-    const purchasedRepo = queryRunner.manager.getCustomRepository(
+    const cartRepo = this.transactionalRepo.getCustomRepository(CartRepository);
+    const stockRepo = this.transactionalRepo.getCustomRepository(
+      StockRepository,
+    );
+    const purchasedRepo = this.transactionalRepo.getCustomRepository(
       PurchasedRepository,
     );
-    try {
-      let products: CartEntity[];
-      if (sessionToken) {
-        products = await cartRepo.getProductsInCart(sessionToken, null);
-      } else {
-        products = await cartRepo.getProductsInCart(null, sessionId);
-      }
-      for (const product of products) {
-        await stockRepo.reduceStock(product.idName, product.size);
-        await cartRepo.setProductPaid(product);
-      }
-      if (sessionToken) {
-        await purchasedRepo.insert({ email, sessionToken, time: new Date() });
-      } else {
-        // TODO have to implement the log
-      }
 
-      await queryRunner.commitTransaction();
-    } catch (e) {
-      console.log(e);
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
+    let products: CartEntity[];
+    if (sessionToken) {
+      products = await cartRepo.getProductsInCart(sessionToken, null);
+    } else {
+      products = await cartRepo.getProductsInCart(null, sessionId);
+    }
+    for (const product of products) {
+      await stockRepo.reduceStock(product.idName, product.size);
+      await cartRepo.setProductPaid(product);
+    }
+    if (sessionToken) {
+      await purchasedRepo.insert({ email, sessionToken, time: new Date() });
+    } else {
+      // TODO have to implement the log
+      this.purchaseLogService.recordPurchase(products);
     }
 
     return {};
@@ -138,7 +130,7 @@ export class CartService {
     );
     const productTotal = sumBy(
       cartItems,
-      item => item.amount * item.product.price,
+      (item) => item.amount * item.product.price,
     );
     const withCoupon = this.applyCoupon(productTotal, <Coupon>coupon);
 

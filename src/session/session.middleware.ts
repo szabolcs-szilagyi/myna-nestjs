@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as session from 'express-session';
 import { TypeormStore } from 'typeorm-store';
@@ -16,9 +16,7 @@ const cookieDomain = isDevelopmentEnv ? undefined : 'mynalabel.com';
 @Injectable()
 export class SessionMiddleware implements NestMiddleware {
   private readonly store: TypeormStore;
-  constructor(
-    private readonly sessionRepo: SessionRepository,
-  ) {
+  constructor(private readonly sessionRepo: SessionRepository) {
     this.store = new TypeormStore({
       repository: this.sessionRepo,
     });

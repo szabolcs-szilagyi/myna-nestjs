@@ -14,6 +14,7 @@ import { AppConfig } from './config/app.config';
 import { EmailModule } from './email/email.module';
 import { ClientModule } from './client/client.module';
 import { SessionModule } from './session/session.module';
+import { TransactionalRepositoryModule } from './transactional-repository/transactional-repository.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SessionModule } from './session/session.module';
     EmailModule,
     ClientModule,
     SessionModule,
+    TransactionalRepositoryModule,
   ],
   controllers: [AppController],
 })
