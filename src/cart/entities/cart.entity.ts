@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import {
   Column,
   Entity,
@@ -12,15 +13,18 @@ export class CartEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Expose()
   @Column('varchar', { name: 'idname' })
   idName: string;
 
+  @Expose()
   @Column('varchar')
   size: string;
 
   @Column('varchar', { name: 'session_token' })
   sessionToken: string;
 
+  @Expose()
   @Column('int')
   amount: number;
 

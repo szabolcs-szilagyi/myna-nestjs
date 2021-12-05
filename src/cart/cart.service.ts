@@ -96,7 +96,6 @@ export class CartService {
     if (sessionToken) {
       await purchasedRepo.insert({ email, sessionToken, time: new Date() });
     } else {
-      // TODO have to implement the log
       this.purchaseLogService.recordPurchase(products);
     }
 

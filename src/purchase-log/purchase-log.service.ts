@@ -4,6 +4,7 @@ import { CartEntity } from '../cart/entities/cart.entity';
 import { TransactionalRepository } from '../transactional-repository/transactional-repository';
 import { PurchaseLogRepository } from './purchase-log.repository';
 import { USER_DATA } from '../session/user-data';
+import { classToPlain } from 'class-transformer';
 
 @Injectable()
 export class PurchaseLogService {
@@ -22,7 +23,9 @@ export class PurchaseLogService {
     this.purchaseLogRepository.insert({
       logData: {
         userData: this.userData,
-        products,
+        products: classToPlain(products, {
+          excludeExtraneousValues: true,
+        }),
       },
     });
   }
