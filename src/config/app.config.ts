@@ -12,25 +12,36 @@ const dbSsl = {
   production: { rejectUnauthorized: false },
   staging: { rejectUnauthorized: false },
   development: false,
+  test: false,
 };
 
-export const AppConfig = registerAs('app', () => ({
-  emailConfig: {
-    senderEmail: 'MYNA <connect@mynalabel.com>',
-    smtp: {
-      host: EMAIL_SMTP_HOST,
-      port: parseInt(EMAIL_SMTP_PORT, 10),
-      auth: {
-        user: EMAIL_SMTP_USER,
-        pass: EMAIL_SMTP_PASS,
+export const AppConfig = registerAs('app', () => {
+  const basicConfig = {
+    emailConfig: {
+      senderEmail: 'MYNA <connect@mynalabel.com>',
+      smtp: {
+        host: EMAIL_SMTP_HOST,
+        port: parseInt(EMAIL_SMTP_PORT, 10),
+        auth: {
+          user: EMAIL_SMTP_USER,
+          pass: EMAIL_SMTP_PASS,
+        },
       },
+      frontEndHost: process.env.FRONTEND_HOST || 'http://localhost:3000',
     },
-    frontEndHost: process.env.FRONTEND_HOST || 'http://localhost:3000',
-  },
-  host: process.env.HOST || 'http://localhost:7000',
-  dbUrl:
-    process.env.DATABASE_URL ||
-    'postgres://myna_dev:developer@127.0.0.1/myna_dev',
-  dbSsl: dbSsl[NODE_ENV],
-  synchronize: process.env.DB_SYNC === 'true' || false,
-}));
+    host: process.env.HOST || 'http://localhost:7000',
+    dbUrl:
+      process.env.DATABASE_URL ||
+      'postgres://myna_dev:developer@127.0.0.1/myna_dev',
+    dbSsl: dbSsl[NODE_ENV],
+    synchronize: process.env.DB_SYNC === 'true' || false,
+  };
+
+  if (NODE_ENV === 'test') {
+    return Object.assign({}, basicConfig, {
+      dbUrl: 'postgres://myna_test:test@127.0.0.1/myna_test',
+    });
+  } else {
+    return basicConfig;
+  }
+});

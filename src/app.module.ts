@@ -12,6 +12,8 @@ import { AppController } from './app.controller';
 import { catchAllOmiter } from './app.middleware';
 import { AppConfig } from './config/app.config';
 import { EmailModule } from './email/email.module';
+import { SessionModule } from './session/session.module';
+import { TransactionalRepositoryModule } from './transactional-repository/transactional-repository.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { EmailModule } from './email/email.module';
     TokenModule,
     UserModule,
     EmailModule,
+    SessionModule,
+    TransactionalRepositoryModule,
   ],
   controllers: [AppController],
 })
