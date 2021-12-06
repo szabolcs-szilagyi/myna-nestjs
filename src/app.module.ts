@@ -12,7 +12,6 @@ import { AppController } from './app.controller';
 import { catchAllOmiter } from './app.middleware';
 import { AppConfig } from './config/app.config';
 import { EmailModule } from './email/email.module';
-import { ClientModule } from './client/client.module';
 import { SessionModule } from './session/session.module';
 import { TransactionalRepositoryModule } from './transactional-repository/transactional-repository.module';
 
@@ -33,7 +32,6 @@ import { TransactionalRepositoryModule } from './transactional-repository/transa
     TokenModule,
     UserModule,
     EmailModule,
-    ClientModule,
     SessionModule,
     TransactionalRepositoryModule,
   ],
