@@ -17,9 +17,6 @@ export class AddressController {
     private readonly tokenService: TokenService,
   ) {}
 
-  /**
-   * TODO: have to start using session cookie here as well!!!
-   */
   @Get('shipping-info')
   async getShippingInfo(
     @PurifiedToken('session-token') sessionToken: string,
