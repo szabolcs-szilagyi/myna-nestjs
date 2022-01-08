@@ -109,9 +109,7 @@ describe('CartController', () => {
 
   describe('POST cart', () => {
     it('requires session and product details', () => {
-      return agent(app.getHttpServer())
-        .post('/cart')
-        .expect(400);
+      return agent(app.getHttpServer()).post('/cart').expect(400);
     });
 
     it('able to add product using session token', async () => {
@@ -151,9 +149,7 @@ describe('CartController', () => {
 
   describe('DELETE cart/:id', () => {
     it('requires session and product id', () => {
-      return agent(app.getHttpServer())
-        .delete('/cart/0')
-        .expect(400);
+      return agent(app.getHttpServer()).delete('/cart/0').expect(400);
     });
 
     it('able to remove product from cart using token', async () => {

@@ -24,7 +24,9 @@ export class AddressController {
   ) {
     let country: string;
     if (sessionToken) {
-      const email = await this.tokenService.getEmailBySessionToken(sessionToken);
+      const email = await this.tokenService.getEmailBySessionToken(
+        sessionToken,
+      );
       const address = await this.addressService.getAddressDataByEmail(email);
       country = address?.country;
     } else {

@@ -14,9 +14,6 @@ import { userDataProvider, USER_DATA } from './user-data';
 })
 export class SessionModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(SessionMiddleware)
-      .exclude('legacy*')
-      .forRoutes('*');
+    consumer.apply(SessionMiddleware).exclude('legacy*').forRoutes('*');
   }
 }

@@ -128,9 +128,7 @@ describe('AddressController', () => {
 
       const agentInstance = supertest.agent(app.getHttpServer());
 
-      await agentInstance
-        .get('/address/shipping-info')
-        .expect(200);
+      await agentInstance.get('/address/shipping-info').expect(200);
 
       return agentInstance
         .get('/address/shipping-info')
@@ -188,9 +186,7 @@ describe('AddressController', () => {
 
       const agentInstance = supertest.agent(app.getHttpServer());
 
-      await agentInstance
-        .get('/address/shipping-info')
-        .expect(200);
+      await agentInstance.get('/address/shipping-info').expect(200);
 
       return agentInstance
         .get('/address/shipping-info')
@@ -248,9 +244,7 @@ describe('AddressController', () => {
 
       const agentInstance = supertest.agent(app.getHttpServer());
 
-      await agentInstance
-        .get('/address/shipping-info')
-        .expect(200);
+      await agentInstance.get('/address/shipping-info').expect(200);
 
       return agentInstance
         .get('/address/shipping-info')

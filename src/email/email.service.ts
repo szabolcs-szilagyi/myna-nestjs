@@ -11,7 +11,7 @@ export interface PreparedEmail {
   subject: string;
   textBody: string;
   htmlBody: string;
-};
+}
 
 @Injectable()
 export class EmailService {
@@ -69,18 +69,23 @@ export class EmailService {
     await this.sendEmail(preparedEmail);
   }
 
-  async sendPurchaseEmailNew(userData: UserDataDto, products: Pick<CartEntity, 'idName' | 'size'>[]) {
+  async sendPurchaseEmailNew(
+    userData: UserDataDto,
+    products: Pick<CartEntity, 'idName' | 'size'>[],
+    price: string,
+  ) {
     const subject = 'New Order';
-    const productList = products.reduce(
-      (memo, product: CartEntity, index) => {
-        const separator = index === 0 ? '' : ', '
-        memo += `${separator}${product.idName} - ${product.size}`;
-        return memo;
-      },
-      '',
-    )
+    const productList = products.reduce((memo, product: CartEntity, index) => {
+      const separator = index === 0 ? '' : ', ';
+      memo += `${separator}${product.idName} - ${product.size}`;
+      return memo;
+    }, '');
 
-    const { textBody, htmlBody } = Object.entries({ ...userData, products: productList }).reduce(
+    const { textBody, htmlBody } = Object.entries({
+      ...userData,
+      price,
+      products: productList,
+    }).reduce(
       (memo, [key, value]) => {
         memo.textBody += `${key}: ${value}\r\n\r\n`;
         memo.htmlBody += `${key}: ${value}<br />`;

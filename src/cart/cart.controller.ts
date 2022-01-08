@@ -122,12 +122,14 @@ export class CartController {
   async completePurchase(
     @SessionId() sessionId: string,
     @Session() session: ExpressSession,
+    @Body('price') price: string,
   ) {
     const userData = plainToClass(UserDataDto, session, {
       excludeExtraneousValues: true,
     });
+
     await this.transactionalRepo.withTransaction(() =>
-      this.cartService.completePurchase(sessionId, userData),
+      this.cartService.completePurchase(sessionId, userData, price),
     );
   }
 

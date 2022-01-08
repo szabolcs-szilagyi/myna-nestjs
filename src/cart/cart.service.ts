@@ -17,7 +17,7 @@ type Coupon = 'mynafriend10' | 'mynagift15';
 class InternalServerError extends InternalServerErrorException {
   public errors: Error[];
 
-  constructor(objectOrError?: string | object | any, description?: string) {
+  constructor(objectOrError?: string | any, description?: string) {
     super(objectOrError, description);
   }
 }
@@ -113,21 +113,25 @@ export class CartService {
     return products;
   }
 
-  async completePurchase(sessionId: string, userData: UserDataDto) {
+  async completePurchase(
+    sessionId: string,
+    userData: UserDataDto,
+    price: string,
+  ) {
     const errors: Error[] = [];
 
     const products: CartEntity[] = await this.setProductsPaid(
       null,
       sessionId,
       userData.email,
-    ).catch(e => {
+    ).catch((e) => {
       errors.push(e);
       return [];
     });
 
     await this.emailService
-      .sendPurchaseEmailNew(userData, products)
-      .catch(e => errors.push(e));
+      .sendPurchaseEmailNew(userData, products, price)
+      .catch((e) => errors.push(e));
 
     if (errors.length) {
       const err = new InternalServerError(
@@ -166,7 +170,7 @@ export class CartService {
     );
     const productTotal = sumBy(
       cartItems,
-      item => item.amount * item.product.price,
+      (item) => item.amount * item.product.price,
     );
     const withCoupon = this.applyCoupon(productTotal, <Coupon>coupon);
 
