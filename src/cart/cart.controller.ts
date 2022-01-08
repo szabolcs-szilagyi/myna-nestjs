@@ -11,6 +11,7 @@ import {
   NotFoundException,
   ValidationPipe,
   Session,
+  Header,
 } from '@nestjs/common';
 import { SessionId } from '../decorators/session-id.decorator';
 import { AddressService } from '../address/address.service';
@@ -76,6 +77,7 @@ export class CartController {
   }
 
   @Get('products-in-cart')
+  @Header('cache-control', 'no-store')
   async getProductsInCart(
     @SessionId() sessionId: string,
     @PurifiedToken('session-token') sessionToken: string,
@@ -127,6 +129,7 @@ export class CartController {
   }
 
   @Get('more-accurate-availability')
+  @Header('cache-control', 'no-store')
   async getMoreAccurateAvailability(
     @SessionId() sessionId: string,
     @PurifiedToken('session-token') sessionToken: string,
@@ -146,6 +149,7 @@ export class CartController {
   }
 
   @Get('total')
+  @Header('cache-control', 'no-store')
   async getTotal(
     @Session() session: any,
     @SessionId() sessionId: string,
