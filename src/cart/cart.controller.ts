@@ -25,6 +25,9 @@ import { CartEntity } from './entities/cart.entity';
 import { promisify } from 'util';
 import { omit } from 'lodash/fp';
 import { TransactionalRepository } from '../transactional-repository/transactional-repository';
+import { UserDataDto } from '../session/user-data.dto';
+import { Session as ExpressSession } from 'express-session';
+import { plainToClass } from 'class-transformer';
 
 @Controller('cart')
 export class CartController {
@@ -113,6 +116,17 @@ export class CartController {
       this.cartService.setProductsPaid(sessionToken, sessionId, email),
     );
     return result;
+  }
+
+  @Post('complete-purchase')
+  async completePurchase(
+    @SessionId() sessionId: string,
+    @Session() session: ExpressSession,
+  ) {
+    const userData = plainToClass(UserDataDto, session, {
+      excludeExtraneousValues: true,
+    });
+    await this.cartService.completePurchase(sessionId, userData);
   }
 
   @Get('availability')

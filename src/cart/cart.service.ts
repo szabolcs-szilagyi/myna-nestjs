@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CartRepository } from './cart.repository';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { StockRepository } from './stock.repository';
@@ -9,8 +9,18 @@ import { sumBy } from 'lodash';
 import { CartEntity } from './entities/cart.entity';
 import { TransactionalRepository } from '../transactional-repository/transactional-repository';
 import { PurchaseLogService } from '../purchase-log/purchase-log.service';
+import { EmailService } from '../email/email.service';
+import { UserDataDto } from 'src/session/user-data.dto';
 
 type Coupon = 'mynafriend10' | 'mynagift15';
+
+class InternalServerError extends InternalServerErrorException {
+  public errors: Error[];
+
+  constructor(objectOrError?: string | object | any, description?: string) {
+    super(objectOrError, description);
+  }
+}
 
 @Injectable()
 export class CartService {
@@ -19,6 +29,7 @@ export class CartService {
     private readonly stockRepository: StockRepository,
     private readonly transactionalRepo: TransactionalRepository,
     private readonly purchaseLogService: PurchaseLogService,
+    private readonly emailService: EmailService,
   ) {}
 
   async addProductToCart(
@@ -99,7 +110,33 @@ export class CartService {
       this.purchaseLogService.recordPurchase(products);
     }
 
-    return {};
+    return products;
+  }
+
+  async completePurchase(sessionId: string, userData: UserDataDto) {
+    const errors: Error[] = [];
+
+    const products: CartEntity[] = await this.setProductsPaid(
+      null,
+      sessionId,
+      userData.email,
+    ).catch(e => {
+      errors.push(e);
+      return [];
+    });
+
+    await this.emailService
+      .sendPurchaseEmailNew(userData, products)
+      .catch(e => errors.push(e));
+
+    if (errors.length) {
+      const err = new InternalServerError(
+        'Something went wrong completing the order',
+      );
+      err.errors = errors;
+
+      throw err;
+    }
   }
 
   getAvailability(idName: string): Promise<StockEntity> {
@@ -129,7 +166,7 @@ export class CartService {
     );
     const productTotal = sumBy(
       cartItems,
-      (item) => item.amount * item.product.price,
+      item => item.amount * item.product.price,
     );
     const withCoupon = this.applyCoupon(productTotal, <Coupon>coupon);
 

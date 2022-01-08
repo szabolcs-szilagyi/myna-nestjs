@@ -9,6 +9,7 @@ import { TokenModule } from '../token/token.module';
 import { AddressModule } from '../address/address.module';
 import { PurchaseLogModule } from '../purchase-log/purchase-log.module';
 import { TransactionalRepositoryModule } from '../transactional-repository/transactional-repository.module';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TransactionalRepositoryModule } from '../transactional-repository/trans
     TokenModule,
     AddressModule,
     PurchaseLogModule,
+    EmailModule,
   ],
   controllers: [CartController],
   providers: [CartService],

@@ -21,6 +21,8 @@ import { SessionRepository } from '../session/session.repository';
 import { PurchaseLogService } from '../purchase-log/purchase-log.service';
 import { PurchaseLogModule } from '../purchase-log/purchase-log.module';
 import { TransactionalRepositoryModule } from '../transactional-repository/transactional-repository.module';
+import { EmailService } from '../email/email.service';
+import { EmailModule } from '../email/email.module';
 
 const sandbox = createSandbox();
 
@@ -44,6 +46,9 @@ describe('CartController', () => {
     getAddressDataByEmail: sandbox.stub(),
     getDeliveryCost: sandbox.stub(),
   };
+  const emailService = {
+    sendPurchaseEmailNew: sandbox.stub().resolves(),
+  };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -65,6 +70,7 @@ describe('CartController', () => {
         TokenModule,
         AddressModule,
         ProductModule, // needed so that we can add products for test
+        EmailModule,
       ],
       controllers: [CartController],
       providers: [CartService],
@@ -77,6 +83,8 @@ describe('CartController', () => {
       .useValue({
         recordPurchase: sandbox.stub().resolves(),
       })
+      .overrideProvider(EmailService)
+      .useValue(emailService)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -96,12 +104,14 @@ describe('CartController', () => {
     await purchasedRepo.delete({});
     await productRepo.delete({});
 
-    sandbox.reset();
+    sandbox.resetHistory();
   });
 
   describe('POST cart', () => {
     it('requires session and product details', () => {
-      return agent(app.getHttpServer()).post('/cart').expect(400);
+      return agent(app.getHttpServer())
+        .post('/cart')
+        .expect(400);
     });
 
     it('able to add product using session token', async () => {
@@ -141,7 +151,9 @@ describe('CartController', () => {
 
   describe('DELETE cart/:id', () => {
     it('requires session and product id', () => {
-      return agent(app.getHttpServer()).delete('/cart/0').expect(400);
+      return agent(app.getHttpServer())
+        .delete('/cart/0')
+        .expect(400);
     });
 
     it('able to remove product from cart using token', async () => {
@@ -990,6 +1002,13 @@ describe('CartController', () => {
         .get('/cart/total')
         .set('coupon', 'mynafriend10')
         .expect(200, { topay: 100, delivery: 10, products: 90 });
+    });
+  });
+
+  describe('POST complete-purchase', () => {
+    it('calls the completePurchase method on the service', async () => {
+      const agentInstance = agent(app.getHttpServer());
+      await agentInstance.post('/cart/complete-purchase').expect(201);
     });
   });
 });
