@@ -11,7 +11,6 @@ const {
 
 const devEnv = new Set([undefined, 'dev', 'development', 'test']);
 const isDevelopmentEnv = devEnv.has(NODE_ENV);
-const cookieDomain = isDevelopmentEnv ? undefined : 'mynalabel.com';
 
 @Injectable()
 export class SessionMiddleware implements NestMiddleware {
@@ -23,6 +22,13 @@ export class SessionMiddleware implements NestMiddleware {
   }
 
   use(req: Request, res: Response, next: NextFunction) {
+    let cookieDomain = 'mynalabel.com';
+    if (isDevelopmentEnv) {
+      cookieDomain = undefined;
+    } else if (/\.?mynalabel.com$/.test(req.hostname)) {
+      cookieDomain = req.hostname;
+    }
+
     session({
       store: this.store,
       secret: SESSION_SECRET,
