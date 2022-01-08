@@ -87,22 +87,28 @@ describe('SessionController', () => {
     });
   });
 
-  describe('GET user data', () => {
-    it('returns empty if there is no data', async () => {
-      const { body } = await agent(app.getHttpServer())
-        .get('/session')
-        .expect(200);
+  describe('GET valid session', () => {
+    it('returns falsy for validity', async () => {
+      const agentInstance = agent(app.getHttpServer());
 
-      expect(body).toEqual({});
+      const { body } = await agentInstance.get('/session/is-valid').expect(200);
+
+      expect(body).toEqual({ isValid: false });
     });
 
-    it('returns the previously set user detail', async () => {
+    it('gives successful response if the session is filled with delivery details', async () => {
       const sessionRepo = app.get(SessionRepository) as any;
 
       sessionRepo.findOne.resolves({
         data: JSON.stringify({
           name: 'asdf',
           email: 'asdf@asdf',
+          mobile: '123',
+          addressLine1: 'asdf',
+          city: 'tad',
+          country: 'asd',
+          state: 'aggf',
+          zip: '1234',
           cookie: {
             path: '/',
             _expires: new Date().toISOString(),
@@ -122,19 +128,19 @@ describe('SessionController', () => {
           name: 'sir yoloo',
           email: 'asdf@asdf',
           mobile: '123',
-          addressLine1: '',
+          addressLine1: 'asdf',
           addressLine2: '',
-          city: '',
-          country: '',
+          city: 'tad',
+          country: 'asd',
           comment: '',
-          state: '',
-          zip: '',
+          state: 'aggf',
+          zip: '1234',
         })
         .expect(201);
 
-      const { body } = await agentInstance.get('/session').expect(200);
+      const { body } = await agentInstance.get('/session/is-valid').expect(200);
 
-      expect(body).toEqual({ name: 'asdf', email: 'asdf@asdf' });
+      expect(body).toEqual({ isValid: true });
     });
   });
 });
