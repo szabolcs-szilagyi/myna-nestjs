@@ -126,7 +126,9 @@ export class CartController {
     const userData = plainToClass(UserDataDto, session, {
       excludeExtraneousValues: true,
     });
-    await this.cartService.completePurchase(sessionId, userData);
+    await this.transactionalRepo.withTransaction(() =>
+      this.cartService.completePurchase(sessionId, userData),
+    );
   }
 
   @Get('availability')
