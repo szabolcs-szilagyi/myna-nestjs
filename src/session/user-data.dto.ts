@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UserDataDto {
   @Expose()
@@ -24,8 +24,9 @@ export class UserDataDto {
 
   @Expose()
   @IsString()
+  @IsOptional()
   @MaxLength(1024)
-  addressLine2: string;
+  addressLine2?: string;
 
   @Expose()
   @IsString()
@@ -49,6 +50,7 @@ export class UserDataDto {
 
   @Expose()
   @IsString()
+  @IsOptional()
   @MaxLength(1024)
-  comment: string;
+  comment?: string;
 }
