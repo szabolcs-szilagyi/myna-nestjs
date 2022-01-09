@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Session } from '@nestjs/common';
+import { Body, Controller, Get, Header, Inject, Post, Session } from '@nestjs/common';
 import { CustomHeaders } from '../token/decorators/custom-headers.decorator';
 import { PurifiedToken } from '../token/decorators/purified-token.decorator';
 import { EmailStripperPipe } from '../token/pipes/email-stripper.pipe';
@@ -18,6 +18,7 @@ export class AddressController {
   ) {}
 
   @Get('shipping-info')
+  @Header('cache-control', 'no-store')
   async getShippingInfo(
     @PurifiedToken('session-token') sessionToken: string,
     @Session() session: any,
