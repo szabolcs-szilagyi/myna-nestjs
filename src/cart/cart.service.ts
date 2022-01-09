@@ -10,7 +10,7 @@ import { CartEntity } from './entities/cart.entity';
 import { TransactionalRepository } from '../transactional-repository/transactional-repository';
 import { PurchaseLogService } from '../purchase-log/purchase-log.service';
 import { EmailService } from '../email/email.service';
-import { UserDataDto } from 'src/session/user-data.dto';
+import { UserDataDto } from '../session/user-data.dto';
 
 type Coupon = 'mynafriend10' | 'mynagift15';
 

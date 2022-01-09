@@ -38,7 +38,7 @@ export class SessionMiddleware implements NestMiddleware {
       cookie: {
         domain: cookieDomain,
         maxAge: 24 * 60 * 60 * 1000,
-        httpOnly: isDevelopmentEnv,
+        httpOnly: true,
         secure: false,
       },
     })(req, res, next);
