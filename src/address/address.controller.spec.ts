@@ -10,15 +10,29 @@ import { LoginTokenRepository } from '../token/login-token.repository';
 import { SessionTokenRepository } from '../token/session-token.repository';
 import { AddressEntity } from './entities/address.entity';
 import { AddressDataDto } from './dto/address-data.dto';
-import { assert } from 'sinon';
+import { assert, createSandbox } from 'sinon';
 import { omit } from 'lodash/fp';
+import { SessionRepository } from '../session/session.repository';
+import { SessionModule } from '../session/session.module';
 
 describe('AddressController', () => {
   let app: INestApplication;
-  let sessionRepo: SessionTokenRepository;
+  let oldSessionRepo: SessionTokenRepository;
   let addressRepo: AddressRepository;
+  const sandbox = createSandbox();
 
   beforeAll(async () => {
+    const sessionRepositoryStub = {
+      save: sandbox.stub().resolves({}),
+      update: sandbox.stub().resolves(undefined),
+      delete: sandbox.stub().resolves(undefined),
+      clear: sandbox.stub().resolves(undefined),
+      count: sandbox.stub().resolves(undefined),
+      find: sandbox.stub().resolves([]),
+      destroy: sandbox.stub().resolves(undefined),
+      findOne: sandbox.stub().resolves(undefined),
+    };
+
     const moduleRef = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -32,23 +46,29 @@ describe('AddressController', () => {
           LoginTokenRepository,
           SessionTokenRepository,
         ]),
+        SessionModule,
       ],
       controllers: [AddressController],
       providers: [AddressService, TokenService],
-    }).compile();
+    })
+      .overrideProvider(SessionRepository)
+      .useValue(sessionRepositoryStub)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
-    sessionRepo = app.get(SessionTokenRepository) as SessionTokenRepository;
+    oldSessionRepo = app.get(SessionTokenRepository) as SessionTokenRepository;
     addressRepo = app.get(AddressRepository) as AddressRepository;
   });
 
+  afterAll(() => app.close());
+
   beforeEach(async () => {
-    await sessionRepo.delete({});
+    await oldSessionRepo.delete({});
     await addressRepo.delete({});
   });
 
-  afterAll(() => app.close());
+  afterEach(() => sandbox.resetHistory());
 
   describe('GET shipping-info', () => {
     it('returns default text if no session available', () => {
@@ -57,11 +77,11 @@ describe('AddressController', () => {
         .expect(200, { shippinginfo: 'Plus shipping fee' });
     });
 
-    it('for EU countries shipping is 10 EUR', async () => {
+    it('for EU countries shipping is 10 EUR using token', async () => {
       const sessionToken = 'asdfasdfasdfasdfasdfasd';
       const email = 'test@e-mail.hu';
 
-      await sessionRepo.insert({
+      await oldSessionRepo.insert({
         email,
         sessionToken,
         createTime: new Date(),
@@ -87,11 +107,39 @@ describe('AddressController', () => {
         .expect(200, { shippinginfo: 'incl. €10 shipping fee (EU)' });
     });
 
-    it('for non-EU countries shipping is 25 EUR', async () => {
+    it('for EU countries shipping is 10 EUR using cookie', async () => {
+      const sessionRepo = app.get(SessionRepository) as any;
+
+      sessionRepo.findOne.resolves({
+        data: JSON.stringify({
+          name: 'asdf',
+          email: 'asdf@asdf',
+          country: 'austria',
+          cookie: {
+            path: '/',
+            _expires: new Date().toISOString(),
+            originalMaxAge: 86400000,
+            httpOnly: true,
+            domain: undefined,
+            secure: false,
+          },
+        }),
+      });
+
+      const agentInstance = supertest.agent(app.getHttpServer());
+
+      await agentInstance.get('/address/shipping-info').expect(200);
+
+      return agentInstance
+        .get('/address/shipping-info')
+        .expect(200, { shippinginfo: 'incl. €10 shipping fee (EU)' });
+    });
+
+    it('for non-EU countries shipping is 25 EUR using token', async () => {
       const sessionToken = 'asdfasdfasdfasdfasdfasd';
       const email = 'test@e-mail.hu';
 
-      await sessionRepo.insert({
+      await oldSessionRepo.insert({
         email,
         sessionToken,
         createTime: new Date(),
@@ -117,11 +165,39 @@ describe('AddressController', () => {
         .expect(200, { shippinginfo: 'incl. €25 shipping fee (Non-EU)' });
     });
 
-    it('for Poland its free shipping', async () => {
+    it('for non-EU countries shipping is 25 EUR using cookie', async () => {
+      const sessionRepo = app.get(SessionRepository) as any;
+
+      sessionRepo.findOne.resolves({
+        data: JSON.stringify({
+          name: 'asdf',
+          email: 'asdf@asdf',
+          country: 'australia',
+          cookie: {
+            path: '/',
+            _expires: new Date().toISOString(),
+            originalMaxAge: 86400000,
+            httpOnly: true,
+            domain: undefined,
+            secure: false,
+          },
+        }),
+      });
+
+      const agentInstance = supertest.agent(app.getHttpServer());
+
+      await agentInstance.get('/address/shipping-info').expect(200);
+
+      return agentInstance
+        .get('/address/shipping-info')
+        .expect(200, { shippinginfo: 'incl. €25 shipping fee (Non-EU)' });
+    });
+
+    it('for Poland its free shipping using token', async () => {
       const sessionToken = 'asdfasdfasdfasdfasdfasd';
       const email = 'test@e-mail.hu';
 
-      await sessionRepo.insert({
+      await oldSessionRepo.insert({
         email,
         sessionToken,
         createTime: new Date(),
@@ -144,6 +220,34 @@ describe('AddressController', () => {
       return supertest(app.getHttpServer())
         .get('/address/shipping-info')
         .set('session-token', sessionToken)
+        .expect(200, { shippinginfo: 'incl. free shipping' });
+    });
+
+    it('for Poland its free shipping using cookie', async () => {
+      const sessionRepo = app.get(SessionRepository) as any;
+
+      sessionRepo.findOne.resolves({
+        data: JSON.stringify({
+          name: 'asdf',
+          email: 'asdf@asdf',
+          country: 'poland',
+          cookie: {
+            path: '/',
+            _expires: new Date().toISOString(),
+            originalMaxAge: 86400000,
+            httpOnly: true,
+            domain: undefined,
+            secure: false,
+          },
+        }),
+      });
+
+      const agentInstance = supertest.agent(app.getHttpServer());
+
+      await agentInstance.get('/address/shipping-info').expect(200);
+
+      return agentInstance
+        .get('/address/shipping-info')
         .expect(200, { shippinginfo: 'incl. free shipping' });
     });
   });
@@ -174,7 +278,11 @@ describe('AddressController', () => {
         zip: '3242-23',
       };
 
-      await sessionRepo.insert({ email, sessionToken, createTime: new Date() });
+      await oldSessionRepo.insert({
+        email,
+        sessionToken,
+        createTime: new Date(),
+      });
       await addressRepo.insert(addressData);
 
       return supertest(app.getHttpServer())
@@ -218,7 +326,7 @@ describe('AddressController', () => {
         type: true,
       };
 
-      await sessionRepo.insert({
+      await oldSessionRepo.insert({
         email: addressData.email,
         sessionToken,
         createTime: new Date(),
@@ -247,7 +355,7 @@ describe('AddressController', () => {
         type: true,
       };
 
-      await sessionRepo.insert({
+      await oldSessionRepo.insert({
         email: addressData.email,
         sessionToken,
         createTime: new Date(),

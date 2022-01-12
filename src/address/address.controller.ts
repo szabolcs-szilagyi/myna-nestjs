@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Header, Inject, Post, Session } from '@nestjs/common';
 import { CustomHeaders } from '../token/decorators/custom-headers.decorator';
 import { PurifiedToken } from '../token/decorators/purified-token.decorator';
 import { EmailStripperPipe } from '../token/pipes/email-stripper.pipe';
@@ -18,10 +18,22 @@ export class AddressController {
   ) {}
 
   @Get('shipping-info')
-  async getShippingInfo(@PurifiedToken('session-token') sessionToken: string) {
-    const email = await this.tokenService.getEmailBySessionToken(sessionToken);
-    const address = await this.addressService.getAddressDataByEmail(email);
-    const shippingInfo = this.addressService.getShippingInfo(address?.country);
+  @Header('cache-control', 'no-store')
+  async getShippingInfo(
+    @PurifiedToken('session-token') sessionToken: string,
+    @Session() session: any,
+  ) {
+    let country: string;
+    if (sessionToken) {
+      const email = await this.tokenService.getEmailBySessionToken(
+        sessionToken,
+      );
+      const address = await this.addressService.getAddressDataByEmail(email);
+      country = address?.country;
+    } else {
+      country = session.country;
+    }
+    const shippingInfo = this.addressService.getShippingInfo(country);
 
     return { shippinginfo: shippingInfo };
   }

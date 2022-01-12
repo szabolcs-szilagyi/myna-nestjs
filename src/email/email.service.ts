@@ -3,13 +3,15 @@ import { PurchaseEmailDto } from './dto/purchase-email.dto';
 import { NewsletterSubscriptionEmailDto } from './dto/newsletter-subscription-email.dto';
 import { ConfigService } from '@nestjs/config';
 import { Transporter, createTransport } from 'nodemailer';
+import { CartEntity } from '../cart/entities/cart.entity';
+import { UserDataDto } from '../session/user-data.dto';
 
-type PreparedEmail = {
+export interface PreparedEmail {
   to: string;
   subject: string;
   textBody: string;
   htmlBody: string;
-};
+}
 
 @Injectable()
 export class EmailService {
@@ -25,7 +27,7 @@ export class EmailService {
     this.client = createTransport(config.smtp);
   }
 
-  private async sendEmail(preparedEmail: PreparedEmail): Promise<void> {
+  async sendEmail(preparedEmail: PreparedEmail): Promise<void> {
     try {
       await this.client.sendMail({
         from: this.senderEmail,
@@ -59,6 +61,41 @@ export class EmailService {
 
     const preparedEmail = {
       to: purchaseEmailDto.customerEmail,
+      subject,
+      textBody,
+      htmlBody,
+    } as PreparedEmail;
+
+    await this.sendEmail(preparedEmail);
+  }
+
+  async sendPurchaseEmailNew(
+    userData: UserDataDto,
+    products: Pick<CartEntity, 'idName' | 'size'>[],
+    price: string,
+  ) {
+    const subject = 'New Order';
+    const productList = products.reduce((memo, product: CartEntity, index) => {
+      const separator = index === 0 ? '' : ', ';
+      memo += `${separator}${product.idName} - ${product.size}`;
+      return memo;
+    }, '');
+
+    const { textBody, htmlBody } = Object.entries({
+      ...userData,
+      price,
+      products: productList,
+    }).reduce(
+      (memo, [key, value]) => {
+        memo.textBody += `${key}: ${value}\r\n\r\n`;
+        memo.htmlBody += `${key}: ${value}<br />`;
+        return memo;
+      },
+      { textBody: '', htmlBody: '' },
+    );
+
+    const preparedEmail = {
+      to: userData.email,
       subject,
       textBody,
       htmlBody,

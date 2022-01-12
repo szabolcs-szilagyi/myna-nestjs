@@ -39,7 +39,16 @@ Steps:
      --server-certificate-name mynalabel_com_`date +%Y-%m-%d`  \
      --certificate-body file:///home/szabi/.acme.sh/\*.mynalabel.com/\*.mynalabel.com.cer \
      --private-key file:///home/szabi/.acme.sh/\*.mynalabel.com/\*.mynalabel.com.key \
-     --certificate-chain file:///home/szabi/.acme.sh/\*.mynalabel.com/fullchain.pem \
+     --certificate-chain file:///home/szabi/.acme.sh/\*.mynalabel.com/ca.cer \
      --path /cloudfront/myna/
    ```
 4. change CloudFront to use the new cert via the web ui - `https://console.aws.amazon.com/cloudfront/v3/home?#/distributions/E3QL6B6GNJEOCC`
+
+## Migration steps to cookie based session
+
+- [X] cart.controller
+- [x] create new module for writing and retrieving user data from the session
+      storage (name, address, email, phone, comment for delivery)
+- [x] implement purchase logging with the new way
+- [ ] deploy without changing front-end
+- [ ] start to migrate front-end to the new ways
