@@ -23,6 +23,11 @@ export class ProductController {
     return this.productService.findAll(productFilterDto);
   }
 
+  @Get('available')
+  getListOfAvailableProducts() {
+    return this.productService.getListOfAvailableProducts();
+  }
+
   @Get('basic-infos')
   async getBasicProductInfos(): Promise<Partial<ProductEntity>[]> {
     return this.productService.getBasicProductInfos();

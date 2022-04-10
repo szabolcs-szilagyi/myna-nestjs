@@ -15,6 +15,15 @@ export class ProductService {
     return this.productRepository.find(productFilterDto);
   }
 
+  async getListOfAvailableProducts(): Promise<string[]> {
+    const list = await this.productRepository.find({
+      where: { availability: 'Available' },
+      select: ['idName'],
+    });
+
+    return list.map(x => x.idName);
+  }
+
   getBasicProductInfos(): Promise<Partial<ProductEntity>[]> {
     return this.productRepository.getBasicProductInfos();
   }
