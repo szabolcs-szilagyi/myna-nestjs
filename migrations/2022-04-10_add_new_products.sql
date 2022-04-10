@@ -110,24 +110,24 @@ INSERT INTO public.products (idname, availability, is_one_size, productname, pro
 /* comp_care */     , '<div class="ju">GOTS certified natural fiber fabric. A soft interlock jersey made of 100% organic cotton, slightly stretchy and very soft on the skin. Free from microplastics, 100 % biodegradable.<br />Wash on delicate cycle at 30 celsius degrees, iron at low setting and do not tumble dry.<br />Our fabrics are sustainable and do not require dry cleaning.</div>'
    )
    , (
-/* idname */          'hana-oversize-shirt'
+/* idname */          'hana-oversized-shirt'
 /* availability */  , 'Available'
 /* is_one_size */   , false
-/* productname */   , 'HANA Oversize Shirt'
+/* productname */   , 'HANA Oversized Shirt'
 /* productcolor */  , 'Satin Cream'
 /* productprice */  , 165
 /* desclong */      , '<div class="ju">100% linen quality shirt. Classic design of our HANA shirt represents timeless look. This shirt is cut for an oversize fit for your comfort  and loved style for years to come.  Additionally HANA has one pocket at the front.<br />Sustainably made with love in Europe by local tailors. Look at the composition and care of this amazing quality.</div>'
 /* comp_care */     , '<div class="ju">100% linen, fabric from Turkey.<br />Wash on delicate cycle at 30 Celsius degrees, iron at low setting and do not tumble dry.<br />Our fabrics are sustainable and do not require dry cleaning.</div>'
-/* pic1 */          , 'hana-oversize-shirt-1.jpg'
-/* pic2 */          , 'hana-oversize-shirt-2.jpg'
-/* pic3 */          , 'hana-oversize-shirt-3.jpg'
-/* pic4 */          , 'hana-oversize-shirt-4.jpg'
+/* pic1 */          , 'hana-oversized-shirt-1.jpg'
+/* pic2 */          , 'hana-oversized-shirt-2.jpg'
+/* pic3 */          , 'hana-oversized-shirt-3.jpg'
+/* pic4 */          , 'hana-oversized-shirt-4.jpg'
 /* pic5 */          , NULL
 /* pic6 */          , NULL
 /* pic7 */          , NULL
 /* pic8 */          , NULL
 /* pic9 */          , NULL
-/* productname */   , 'HANA Oversize Shirt'
+/* productname */   , 'HANA Oversized Shirt'
 /* desclong */      , '<div class="ju">100% linen quality shirt. Classic design of our HANA shirt represents timeless look. This shirt is cut for an oversize fit for your comfort  and loved style for years to come.  Additionally HANA has one pocket at the front.<br />Sustainably made with love in Europe by local tailors. Look at the composition and care of this amazing quality.</div>'
 /* comp_care */     , '<div class="ju">100% linen, fabric from Turkey.<br />Wash on delicate cycle at 30 Celsius degrees, iron at low setting and do not tumble dry.<br />Our fabrics are sustainable and do not require dry cleaning.</div>'
    )
@@ -161,7 +161,7 @@ INSERT INTO public.stock
 , ('zinia-skirt',          5,  5, 5, 5,  5, NULL)
 , ('aster-frill',          5,  5, 5, 5,  5, NULL)
 , ('erica-sweatshirt',     5,  5, 5, 5,  5, NULL)
-, ('hana-oversize-shirt',  5,  5, 5, 5,  5, NULL)
+, ('hana-oversized-shirt',  5,  5, 5, 5,  5, NULL)
  ON CONFLICT (idname) DO UPDATE SET
  xs       = EXCLUDED.xs,
  s        = EXCLUDED.s,
