@@ -45,13 +45,14 @@ describe('EmailService', () => {
 
   describe('sendPurchaseEmailNew', () => {
     it('works if all is fine', async () => {
-      await emailService.sendPurchaseEmailNew({} as UserDataDto, []);
+      await emailService.sendPurchaseEmailNew({} as UserDataDto, [], '30$');
     });
 
     it('fills all needed fields for the email', async () => {
       await emailService.sendPurchaseEmailNew(
         { email: 'asdf' } as UserDataDto,
         [],
+        '30$',
       );
 
       assert.calledOnceWithMatch(sendEmailStub, {
@@ -66,6 +67,7 @@ describe('EmailService', () => {
       await emailService.sendPurchaseEmailNew(
         { email: 'asdf' } as UserDataDto,
         [{ idName: 'one', size: 'big' }],
+        '30$',
       );
 
       assert.calledOnceWithMatch(sendEmailStub, {
@@ -83,6 +85,7 @@ describe('EmailService', () => {
           { idName: 'one', size: 'big' },
           { idName: 'two', size: 'small' },
         ],
+        '30 EUR',
       );
 
       assert.calledOnceWithMatch(sendEmailStub, {

@@ -105,7 +105,7 @@ describe('CartService', () => {
     };
 
     it('works if all is fine', async () => {
-      await cartService.completePurchase('asdf', genericUserData);
+      await cartService.completePurchase('asdf', genericUserData, '30 EUR');
     });
 
     it('uses the old setProductsPaid', async () => {
@@ -115,13 +115,13 @@ describe('CartService', () => {
       );
       setProductsPaidStub.resolves();
 
-      await cartService.completePurchase('asdf', genericUserData);
+      await cartService.completePurchase('asdf', genericUserData, '30 EUR');
       assert.calledOnce(setProductsPaidStub);
     });
 
     it('will also call the e-mail service', async () => {
       const emailServiceMock = serviceMocks.get(EmailService);
-      await cartService.completePurchase('asdf', genericUserData);
+      await cartService.completePurchase('asdf', genericUserData, '30 EUR');
       assert.calledOnce(emailServiceMock.sendPurchaseEmailNew);
     });
 
@@ -135,7 +135,7 @@ describe('CartService', () => {
       const emailServiceMock = serviceMocks.get(EmailService);
 
       await expect(() =>
-        cartService.completePurchase('adf', genericUserData),
+        cartService.completePurchase('adf', genericUserData, '30 EUR'),
       ).rejects.toThrow();
 
       assert.calledOnce(emailServiceMock.sendPurchaseEmailNew);
@@ -152,7 +152,7 @@ describe('CartService', () => {
       emailServiceMock.sendPurchaseEmailNew.rejects();
 
       await expect(() =>
-        cartService.completePurchase('adf', genericUserData),
+        cartService.completePurchase('adf', genericUserData, '30 EUR'),
       ).rejects.toThrow();
 
       assert.calledOnce(setProductsPaidStub);
@@ -171,7 +171,7 @@ describe('CartService', () => {
       emailServiceMock.sendPurchaseEmailNew.rejects(emailError);
 
       await expect(() =>
-        cartService.completePurchase('adf', genericUserData),
+        cartService.completePurchase('adf', genericUserData, '30 EUR'),
       ).rejects.toHaveProperty('errors.0', emailError);
 
       assert.calledOnce(setProductsPaidStub);
@@ -186,7 +186,7 @@ describe('CartService', () => {
       setProductsPaidStub.rejects(setProductsPaidError);
 
       await expect(() =>
-        cartService.completePurchase('asdf', genericUserData),
+        cartService.completePurchase('asdf', genericUserData, '30 EUR'),
       ).rejects.toHaveProperty('errors.0', setProductsPaidError);
 
       assert.calledOnce(setProductsPaidStub);
