@@ -15,10 +15,18 @@ const sslOptions = {
   test: false,
 };
 
+let dbURL;
+
+if (environment === 'test') {
+  dbURL = 'postgres://myna_test:test@127.0.0.1/myna_test';
+} else {
+  dbURL = data.DATABASE_URL;
+}
+
 // Check typeORM documentation for more information.
 const config: ConnectionOptions = {
   type: 'postgres',
-  url: data.DATABASE_URL,
+  url: dbURL,
   ssl: sslOptions[environment],
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
 

@@ -1,22 +1,14 @@
 import { registerAs } from '@nestjs/config';
 
 const {
-  NODE_ENV = 'development',
-  EMAIL_SMTP_HOST = 'smtp.ethereal.email',
-  EMAIL_SMTP_PORT = '587',
-  EMAIL_SMTP_USER = 'trever.rau@ethereal.email',
-  EMAIL_SMTP_PASS = 'eWB9mfuvCtPspHzxy3',
+  EMAIL_SMTP_HOST,
+  EMAIL_SMTP_PORT,
+  EMAIL_SMTP_USER,
+  EMAIL_SMTP_PASS,
 } = process.env;
 
-const dbSsl = {
-  production: { rejectUnauthorized: false },
-  staging: { rejectUnauthorized: false },
-  development: false,
-  test: false,
-};
-
 export const AppConfig = registerAs('app', () => {
-  const basicConfig = {
+  return {
     emailConfig: {
       senderEmail: 'MYNA <connect@mynalabel.com>',
       smtp: {
@@ -27,21 +19,8 @@ export const AppConfig = registerAs('app', () => {
           pass: EMAIL_SMTP_PASS,
         },
       },
-      frontEndHost: process.env.FRONTEND_HOST || 'http://localhost:3000',
+      frontEndHost: process.env.FRONTEND_HOST,
     },
-    host: process.env.HOST || 'http://localhost:7000',
-    dbUrl:
-      process.env.DATABASE_URL ||
-      'postgres://myna_dev:developer@127.0.0.1/myna_dev',
-    dbSsl: dbSsl[NODE_ENV],
-    synchronize: process.env.DB_SYNC === 'true' || false,
+    host: process.env.HOST,
   };
-
-  if (NODE_ENV === 'test') {
-    return Object.assign({}, basicConfig, {
-      dbUrl: 'postgres://myna_test:test@127.0.0.1/myna_test',
-    });
-  } else {
-    return basicConfig;
-  }
 });
