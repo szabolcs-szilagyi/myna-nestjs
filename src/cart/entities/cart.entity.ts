@@ -35,11 +35,7 @@ export class CartEntity {
   @Column('varchar', { nullable: true })
   session: string;
 
-  @ManyToOne(
-    () => Session,
-    (session) => session.carts,
-    { onDelete: 'CASCADE' }
-  )
+  @ManyToOne(() => Session, (session) => session.carts, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'session' })
   sessionData: Session;
 
