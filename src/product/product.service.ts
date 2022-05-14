@@ -21,7 +21,7 @@ export class ProductService {
       select: ['idName'],
     });
 
-    return list.map(x => x.idName);
+    return list.map((x) => x.idName);
   }
 
   getBasicProductInfos(): Promise<Partial<ProductEntity>[]> {
