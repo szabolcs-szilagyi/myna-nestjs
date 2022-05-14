@@ -7,6 +7,23 @@ import {
 } from 'typeorm';
 import { CartEntity } from '../../cart/entities/cart.entity';
 
+type KnownColors =
+  | 'Satin White'
+  | 'Fresh Green'
+  | 'Peach Glow'
+  | 'Dusty Pink'
+  | 'Dust Pink'
+  | 'Summer Green'
+  | 'Ocean Blue'
+  | 'Light Rose'
+  | 'Midnight Rose'
+  | 'Satin Cream'
+  | 'Shadow Sand'
+  | 'Dusty Rose'
+  | 'Vivid Brown'
+  | 'Crimson Red'
+  | 'Sunrise Yellow';
+
 @Entity({
   name: 'products',
 })
@@ -30,7 +47,7 @@ export class ProductEntity extends BaseEntity {
   namePl: string;
 
   @Column({ type: 'varchar', length: 128, name: 'productcolor' })
-  color: string;
+  color: KnownColors;
 
   @Column('smallint', { name: 'productprice' })
   price: number;
