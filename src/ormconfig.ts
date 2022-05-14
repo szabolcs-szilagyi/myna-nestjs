@@ -2,11 +2,10 @@ import { ConnectionOptions } from 'typeorm';
 
 // You can load you .env file here synchronously using dotenv package (not installed here),
 import * as dotenv from 'dotenv';
-import * as fs from 'fs';
 const environment = process.env.NODE_ENV || 'development';
-const data: any = dotenv.parse(
-  fs.readFileSync(__dirname + `/../.${environment}.env`),
-);
+dotenv.config({
+  path: `${__dirname}/../.${environment}.env`,
+});
 
 const sslOptions = {
   production: { rejectUnauthorized: false },
@@ -20,7 +19,7 @@ let dbURL;
 if (environment === 'test') {
   dbURL = 'postgres://myna_test:test@127.0.0.1/myna_test';
 } else {
-  dbURL = data.DATABASE_URL;
+  dbURL = process.env.DATABASE_URL;
 }
 
 // Check typeORM documentation for more information.
