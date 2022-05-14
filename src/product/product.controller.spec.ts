@@ -7,6 +7,7 @@ import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import { ProductRepository } from './product.repository';
 import { CartRepository } from '../cart/cart.repository';
+import { SessionRepository } from '../session/session.repository';
 
 describe('ProductController', () => {
   let app: INestApplication;
@@ -21,7 +22,11 @@ describe('ProductController', () => {
           autoLoadEntities: true,
           synchronize: false,
         }),
-        TypeOrmModule.forFeature([ProductRepository, CartRepository]),
+        TypeOrmModule.forFeature([
+          CartRepository,
+          ProductRepository,
+          SessionRepository,
+        ]),
       ],
       controllers: [ProductController],
       providers: [ProductService],

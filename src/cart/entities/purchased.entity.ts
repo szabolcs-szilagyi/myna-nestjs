@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'purchased' })
 export class PurchasedEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
   @Column('varchar', { length: 128 })
@@ -11,6 +11,6 @@ export class PurchasedEntity {
   @Column('varchar', { name: 'session_token', length: 32 })
   sessionToken: string;
 
-  @Column('timestamp')
+  @Column({ type: 'timestamptz' })
   time: Date;
 }

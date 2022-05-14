@@ -4,15 +4,15 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
   name: 'session_token',
 })
 export class SessionToken {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column('varchar')
+  @Column('varchar', { length: 128 })
   email: string;
 
-  @Column('varchar', { name: 'session_token' })
+  @Column('varchar', { length: 32, name: 'session_token' })
   sessionToken: string;
 
-  @Column('timestamp', { name: 'create_time' })
+  @Column({ type: 'timestamptz', name: 'create_time' })
   createTime: Date;
 }

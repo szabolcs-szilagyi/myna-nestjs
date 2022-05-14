@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AddressModule } from './address/address.module';
 import { CartModule } from './cart/cart.module';
-import { TypeOrmConfigService } from './config/database';
 import { NewsletterModule } from './newsletter/newsletter.module';
 import { ProductModule } from './product/product.module';
 import { TokenModule } from './token/token.module';
@@ -15,16 +14,17 @@ import { EmailModule } from './email/email.module';
 import { SessionModule } from './session/session.module';
 import { TransactionalRepositoryModule } from './transactional-repository/transactional-repository.module';
 
+import * as typeOrmConfig from './ormconfig';
+
+const environment = process.env.NODE_ENV || 'development';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
-      ignoreEnvFile: true,
       load: [AppConfig],
+      envFilePath: `.${environment}.env`,
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useClass: TypeOrmConfigService,
-    }),
+    TypeOrmModule.forRoot(typeOrmConfig),
     CartModule,
     AddressModule,
     NewsletterModule,

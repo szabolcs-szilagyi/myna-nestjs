@@ -14,6 +14,8 @@ import { assert, createSandbox } from 'sinon';
 import { omit } from 'lodash/fp';
 import { SessionRepository } from '../session/session.repository';
 import { SessionModule } from '../session/session.module';
+import { CartModule } from '../cart/cart.module';
+import { ProductModule } from '../product/product.module';
 
 describe('AddressController', () => {
   let app: INestApplication;
@@ -47,6 +49,8 @@ describe('AddressController', () => {
           SessionTokenRepository,
         ]),
         SessionModule,
+        CartModule,
+        ProductModule,
       ],
       controllers: [AddressController],
       providers: [AddressService, TokenService],

@@ -9,7 +9,8 @@ import { TokenModule } from '../token/token.module';
 import { AddressModule } from '../address/address.module';
 import { PurchaseLogModule } from '../purchase-log/purchase-log.module';
 import { TransactionalRepositoryModule } from '../transactional-repository/transactional-repository.module';
-import { EmailModule } from 'src/email/email.module';
+import { EmailModule } from '../email/email.module';
+import { ProductRepository } from '../product/product.repository';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { EmailModule } from 'src/email/email.module';
       CartRepository,
       StockRepository,
       PurchasedRepository,
+      ProductRepository,
     ]),
     TransactionalRepositoryModule,
     TokenModule,
