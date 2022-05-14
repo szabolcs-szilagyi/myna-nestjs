@@ -1,13 +1,14 @@
 import { registerAs } from '@nestjs/config';
 
-const {
-  EMAIL_SMTP_HOST,
-  EMAIL_SMTP_PORT,
-  EMAIL_SMTP_USER,
-  EMAIL_SMTP_PASS,
-} = process.env;
-
 export const AppConfig = registerAs('app', () => {
+  // Have to be inside the call so that dotenv can be used
+  const {
+    EMAIL_SMTP_HOST,
+    EMAIL_SMTP_PORT,
+    EMAIL_SMTP_USER,
+    EMAIL_SMTP_PASS,
+  } = process.env;
+
   return {
     emailConfig: {
       senderEmail: 'MYNA <connect@mynalabel.com>',
