@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'newsletter' })
 export class NewsletterEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
   @Column('varchar', { length: 128 })
@@ -14,6 +14,6 @@ export class NewsletterEntity {
   @Column('date', { name: 'subscribe_date' })
   subscribeDate: Date;
 
-  @Column('int')
-  enabled: number;
+  @Column('boolean')
+  enabled: boolean;
 }

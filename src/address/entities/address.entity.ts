@@ -2,42 +2,42 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'address' })
 export class AddressEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
   @Column('boolean')
   type: boolean;
 
-  @Column('varchar')
+  @Column({ type: 'varchar', length: 128 })
   email: string;
 
-  @Column('varchar', { name: 'session_token' })
+  @Column({ type: 'varchar', length: 32, name: 'session_token' })
   sessionToken: string;
 
-  @Column('varchar')
-  name: string;
+  @Column({ type: 'varchar', length: 128, nullable: true })
+  name?: string;
 
-  @Column('varchar', { name: 'address_line_1' })
+  @Column({ type: 'varchar', length: 128, name: 'address_line_1' })
   addressLine1: string;
 
-  @Column('varchar', { name: 'address_line_2' })
+  @Column({ type: 'varchar', length: 128, name: 'address_line_2' })
   addressLine2: string;
 
-  @Column('varchar')
+  @Column({ type: 'varchar', length: 128 })
   city: string;
 
-  @Column('varchar')
+  @Column({ type: 'varchar', length: 128 })
   state: string;
 
-  @Column('varchar')
+  @Column({ type: 'varchar', length: 64 })
   zip: string;
 
-  @Column('varchar')
+  @Column({ type: 'varchar', length: 64 })
   country: string;
 
-  @Column('varchar')
+  @Column({ type: 'varchar', length: 256 })
   comment: string;
 
-  @Column('varchar')
+  @Column({ type: 'varchar', length: 24 })
   mobile: string;
 }

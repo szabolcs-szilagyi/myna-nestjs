@@ -5,7 +5,12 @@ export class PurchaseLogEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'creation_time', type: 'timestamp with time zone' })
+  @Column({
+    name: 'creation_time',
+    type: 'timestamptz',
+    default: () => 'NOW()',
+    nullable: true,
+  })
   creationTime: Date;
 
   @Column({ name: 'log_data', type: 'json' })
