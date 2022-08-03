@@ -24,6 +24,7 @@ Steps:
    AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key` \
    acme.sh --issue -d '*.mynalabel.com' -d mynalabel.com --dns dns_aws
    ```
+   2022-08-03 - had to add the `--force` flag
 2. install new cert on heroku
    ```
    # staging

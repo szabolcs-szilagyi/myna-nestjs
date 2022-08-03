@@ -115,7 +115,7 @@ export class addNewProducts1652542708326 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     const productRepo = queryRunner.manager.getRepository(ProductEntity);
     productRepo.delete({
-      idName: In(productList.map(p => p.idName)),
+      idName: In(productList.map((p) => p.idName)),
     });
   }
 }
