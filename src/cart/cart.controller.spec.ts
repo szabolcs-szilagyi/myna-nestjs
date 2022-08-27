@@ -113,6 +113,17 @@ describe('CartController', () => {
     });
 
     it('able to add product using session token', async () => {
+      await productRepo.insert({
+        idName: 'something',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
       const sessionToken = 'randomletters1324324';
       await agent(app.getHttpServer())
         .post('/cart')
@@ -130,6 +141,17 @@ describe('CartController', () => {
 
     it('able to add product using session cookie', async () => {
       const idName = 'something-rand' + Math.floor(Math.random() * 1000);
+      await productRepo.insert({
+        idName,
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
       await agent(app.getHttpServer())
         .post('/cart')
         .send(<AddToCartDto>{
@@ -153,6 +175,17 @@ describe('CartController', () => {
     });
 
     it('able to remove product from cart using token', async () => {
+      await productRepo.insert({
+        idName: 'sotest',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
       const sessionToken = 'randomles1324324';
       await agent(app.getHttpServer())
         .post('/cart')
@@ -172,6 +205,17 @@ describe('CartController', () => {
     });
 
     it('able to remove product from cart using session cookie', async () => {
+      await productRepo.insert({
+        idName: 'sotest',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
       const requestAgent = agent(app.getHttpServer());
       const response = await requestAgent
         .post('/cart')
@@ -196,6 +240,29 @@ describe('CartController', () => {
 
   describe('GET products-in-cart', () => {
     it('returns the correct products using session token', async () => {
+      await productRepo.insert({
+        idName: 'first',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
+      await productRepo.insert({
+        idName: 'second',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
+
       const sessionToken = 'rromelslsdkfe';
       await agent(app.getHttpServer())
         .post('/cart')
@@ -227,6 +294,29 @@ describe('CartController', () => {
     });
 
     it('returns the correct products using session cookie', async () => {
+      await productRepo.insert({
+        idName: 'first',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
+      await productRepo.insert({
+        idName: 'second',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
+
       const agentInstance = agent(app.getHttpServer());
       await agentInstance
         .post('/cart')
@@ -266,6 +356,28 @@ describe('CartController', () => {
 
   describe('POST products-paid', () => {
     it('reduces stock levels', async () => {
+      await productRepo.insert({
+        idName: 'first1',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
+      await productRepo.insert({
+        idName: 'second2',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
       tokenService.getEmailBySessionToken.callsFake(
         async () => 'slkdjfslkdjfls',
       );
@@ -293,6 +405,17 @@ describe('CartController', () => {
     });
 
     it('set cart items that they have been paid using session token', async () => {
+      await productRepo.insert({
+        idName: 'first2',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
       tokenService.getEmailBySessionToken.callsFake(
         async () => 'slkdjfslkdjfls',
       );
@@ -323,6 +446,17 @@ describe('CartController', () => {
     });
 
     it('set cart items that they have been paid using session cookie', async () => {
+      await productRepo.insert({
+        idName: 'first2',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
       const agentInstance = agent(app.getHttpServer());
       const result = await agentInstance
         .post('/cart')
@@ -354,6 +488,17 @@ describe('CartController', () => {
     });
 
     it('records the transaction in the purchased repo', async () => {
+      await productRepo.insert({
+        idName: 'first3',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
       tokenService.getEmailBySessionToken.callsFake(
         async () => 'slkdjfslkdjfls',
       );
@@ -378,6 +523,18 @@ describe('CartController', () => {
     });
 
     it('records transaction in the log', async () => {
+      await productRepo.insert({
+        idName: 'first2',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
+
       const agentInstance = agent(app.getHttpServer());
       const result = await agentInstance
         .post('/cart')
@@ -465,6 +622,18 @@ describe('CartController', () => {
     });
 
     it('reduces availability with the number of products in cart using session token', async () => {
+      await productRepo.insert({
+        idName: 'exist',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
+
       const sessionToken = '12312312434233e';
       await stockRepo.insert({
         idName: 'exist',
@@ -491,6 +660,17 @@ describe('CartController', () => {
     });
 
     it('reduces availability with the number of products in cart using session cookie', async () => {
+      await productRepo.insert({
+        idName: 'exist',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
       await stockRepo.insert({
         idName: 'exist',
         xs: 1,
@@ -517,6 +697,17 @@ describe('CartController', () => {
     });
 
     it('will not reduce availability if different session token is given', async () => {
+      await productRepo.insert({
+        idName: 'exist',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
       await stockRepo.insert({
         idName: 'exist',
         xs: 1,
@@ -542,6 +733,17 @@ describe('CartController', () => {
     });
 
     it('will not reduce availability if different session cookie is given', async () => {
+      await productRepo.insert({
+        idName: 'exist',
+        availability: 'Available',
+        isOneSize: 0,
+        name: 'My product',
+        color: 'Dust Pink',
+        price: 242,
+        description: 'oh , buy this',
+        compCare: 'handwash',
+        pic1: 'that.png',
+      });
       await stockRepo.insert({
         idName: 'exist',
         xs: 1,
@@ -572,7 +774,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Dust Pink',
         price: 222,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
@@ -602,7 +804,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Dusty Pink',
         price: 222,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
@@ -639,7 +841,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Satin Cream',
         price: 222,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
@@ -669,7 +871,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Peach Glow',
         price: 222,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
@@ -708,7 +910,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Midnight Rose',
         price: 111,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
@@ -740,7 +942,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Dust Pink',
         price: 111,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
@@ -778,7 +980,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Crimson Red',
         price: 111,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
@@ -817,7 +1019,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Ocean Blue',
         price: 111,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
@@ -865,7 +1067,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Sunrise Yellow',
         price: 333,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
@@ -898,7 +1100,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Vivid Brown',
         price: 333,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
@@ -938,7 +1140,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Sunrise Yellow',
         price: 100,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
@@ -971,7 +1173,7 @@ describe('CartController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Dusty Pink',
         price: 100,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',

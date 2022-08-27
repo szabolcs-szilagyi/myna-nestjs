@@ -58,7 +58,7 @@ describe('ProductController', () => {
         availability: 'Available',
         isOneSize: 0,
         name: 'My AWESOME product',
-        color: 'black ofcourse...',
+        color: 'Dusty Rose',
         price: 894,
         description: 'oh yeah, buy this',
         compCare: 'handwash only!',
