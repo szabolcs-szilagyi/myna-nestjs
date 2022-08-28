@@ -1,4 +1,4 @@
-import { StockEntity } from 'src/cart/entities/stock.entity';
+import { StockEntity } from '../cart/entities/stock.entity';
 import { MigrationInterface, QueryRunner, In } from 'typeorm';
 
 const productList: string[] = [

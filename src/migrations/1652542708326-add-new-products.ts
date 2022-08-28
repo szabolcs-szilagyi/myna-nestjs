@@ -1,4 +1,4 @@
-import { ProductEntity } from 'src/product/entities/product.entity';
+import { ProductEntity } from '../product/entities/product.entity';
 import { MigrationInterface, QueryRunner, In } from 'typeorm';
 
 const productList: Partial<ProductEntity>[] = [
