@@ -14,7 +14,7 @@ const sslOptions = {
   test: false,
 };
 
-let dbURL;
+let dbURL: string;
 
 if (environment === 'test') {
   dbURL = 'postgres://myna_test:test@127.0.0.1/myna_test';
