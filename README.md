@@ -44,3 +44,26 @@ Steps:
      --path /cloudfront/myna/
    ```
 4. change CloudFront to use the new cert via the web ui - `https://console.aws.amazon.com/cloudfront/v3/home?#/distributions/E3QL6B6GNJEOCC`
+
+## TypeORM migrations
+
+Create a new migration plan run:
+```sh
+npm run typeorm:create <name_of_migration>
+```
+
+Run migration on the `development` env just issue:
+```sh
+npm run typeorm:run
+```
+
+Rollback the last migration will be:
+```sh
+npm run typeorm:revert
+```
+
+For running the migrations on other env. than `development` you will have to
+prepend `NODE_ENV=<env_name>` to the command. E.g. run migration on staging:
+```sh
+NODE_ENV=staging npm run typeorm:run
+```
