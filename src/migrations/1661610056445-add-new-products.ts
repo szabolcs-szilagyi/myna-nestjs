@@ -107,7 +107,7 @@ const productList: (Partial<ProductEntity> & { isUpdate?: boolean })[] = [
   },
   {
     name: 'DAPHNE Cardigan',
-    price: 319,
+    price: 290,
     color: 'Satin Cream',
     description:
       "DAPHNE cardigan is made from 100% merino wool. These high-quality natural fibers create our DAPHNE that is a joy to wear, (hooray for wool that doesn't itch!) and will stand the test of time. Additionally, it makes DAPHNE super light! Merino wool is perfect for both summer and winter due to its breathability and temperature regulating properties. It will keep you warm and insulated in cold weather, and cool and comfortable in the summer months - plus it is hypo-allergenic, making it the perfect fiber for sensitive skin. Merino wool also repels dirt, stains, and wrinkles and is naturally antibacterial – which means minimal washing and ironing! However, when needed it is machine washable, giving it big practicality points. Merino wool is naturally biodegradable.  For a total sustainable finish, we have added eco–friendly buttons from corozo nuts.<br />Look it up also DAPHNE’s sister ZEPHYRA vest from the same merino wool quality.<br /><br />Designed by Justyna and sustainably crafted in Europe. Made with love and attention to small details.<br /><br />DAPHNE cardigan is made to order and may take 1-2 weeks to be handcrafted with care, especially for you.",
@@ -116,7 +116,7 @@ const productList: (Partial<ProductEntity> & { isUpdate?: boolean })[] = [
   },
   {
     name: 'ZEPHYRA Vest',
-    price: 239,
+    price: 210,
     color: 'Satin Cream',
     description:
       "ZEPHYRA vest is made from 100% merino wool. These high-quality natural fibers create our design that is a joy to wear, (hooray for wool that doesn't itch!) and will stand the test of time. Additionally, it makes our ZEPHYRA super light! Merino wool is perfect for both summer and winter due to its breathability and temperature regulating properties. It will keep you warm and insulated in cold weather, and cool and comfortable in the summer months - plus it is hypo-allergenic, making it the perfect fiber for sensitive skin. Merino wool also repels dirt, stains, and wrinkles and is naturally antibacterial – which means minimal washing and ironing! However, when needed it is machine washable, giving it big practicality points. Merino wool is naturally biodegradable. Also meet ZEPHYRA'S sister DAPHNE cardigan from merino wool. For a total sustainable finish, we have added eco–friendly buttons from corozo nuts.<br /><br />Designed by Justyna and sustainably crafted in Europe. Made with love and attention to small details.<br /><br />ZEPHYRA vest is made to order and may take 1-2 weeks to be handcrafted with care, especially for you.",
