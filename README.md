@@ -67,3 +67,14 @@ prepend `NODE_ENV=<env_name>` to the command. E.g. run migration on staging:
 ```sh
 NODE_ENV=staging npm run typeorm:run
 ```
+
+To simply query the migrations that are registered in the database (meaning they
+already ran) you can run direct queries via the TypeORM cli:
+```sh
+npm run typeorm query 'select * from migrations'
+```
+
+Alternatively TypeORM is able to list migration that were ran:
+```sh
+npm run typeorm:show
+```
