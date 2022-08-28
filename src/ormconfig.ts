@@ -35,7 +35,7 @@ const config: ConnectionOptions = {
   // Run migrations automatically,
   // you can disable this if you prefer running migration manually.
   migrationsRun: false,
-  logging: true,
+  logging: ['error', 'warn', 'info'],
   //logger: 'file',
 
   // allow both start:prod and start:dev to use migrations
