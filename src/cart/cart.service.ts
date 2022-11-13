@@ -51,7 +51,7 @@ export class CartService {
       mynafriend10: 0.9,
       mynagift15: 0.85,
       summersale20: 0.8,
-      amazingdeal: 0.5,
+      amazingdeal: 0.6,
     };
 
     const reduction = validCoupons?.[coupon];
