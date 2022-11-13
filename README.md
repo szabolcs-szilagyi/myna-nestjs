@@ -20,6 +20,7 @@ https://building.vts.com/blog/2015/11/02/route53-ssl-naked-domain-redirect/
 Steps:
 1. get new cert:
    ```
+   asp szabi && \
    AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id` \
    AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key` \
    acme.sh --issue -d '*.mynalabel.com' -d mynalabel.com --dns dns_aws
