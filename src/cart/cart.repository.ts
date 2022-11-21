@@ -44,13 +44,13 @@ export class CartRepository extends Repository<CartEntity> {
       return this.find({
         sessionToken,
         idName,
-        size: size === 'oneSize' ? 'onesize' : size,
+        size: size === 'oneSize' ? 'oneSize' : size,
       });
     } else {
       return this.find({
         session: sessionId,
         idName,
-        size: size === 'oneSize' ? 'onesize' : size,
+        size: size === 'oneSize' ? 'oneSize' : size,
       });
     }
   }
