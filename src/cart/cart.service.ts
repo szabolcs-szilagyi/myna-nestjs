@@ -12,7 +12,7 @@ import { PurchaseLogService } from '../purchase-log/purchase-log.service';
 import { EmailService } from '../email/email.service';
 import { UserDataDto } from '../session/user-data.dto';
 
-type Coupon = 'mynafriend10' | 'mynagift15' | 'summersale20' | 'amazingdeal';
+type Coupon = 'mynafriend10' | 'mynagift15' | 'summersale20';
 
 class InternalServerError extends InternalServerErrorException {
   public errors: Error[];
@@ -51,7 +51,6 @@ export class CartService {
       mynafriend10: 0.9,
       mynagift15: 0.85,
       summersale20: 0.8,
-      amazingdeal: 0.6,
     };
 
     const reduction = validCoupons?.[coupon];
