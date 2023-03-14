@@ -1,5 +1,29 @@
 # MYNA
 
+Finito. This site was an interesting challenge for me. The old backend was
+written by someone else in PHP and when I took the old mynalabel.com webshop
+over I didn't wanted to maintain that code base. So I re-wrote it from scratch
+using NestJS.
+
+The front-end code can be seen in the [myna-nextjs](https://github.com/szabolcs-szilagyi/myna-nextjs) repository, for that I've
+continued with the React based NextJS framework, after doing a through re-work
+on it.
+
+The third challange in this whole story for me was Cypress. This was the first
+project, where I've used it. I must admit that tool is awesome!
+
+All these three frameworks / tools were new to me at the time I started it,
+tried my best to learn them as much as I could.
+
+Now I'm sharing this codebase as a reference, maybe it can help the lone
+traveller on their journey through development.
+
+P.S. there are lots of out-of-the-box solutions for webshops, don't hand-roll
+your own. I've only continued to develop this as it was stared by someone else
+before me. While I enjoyed to learn all this, I could have saved a lot of work
+and nerves if I would push for a ready solution and "just" apply the style of
+this page over there.
+
 ## Install heroku-cli
 
 ```
@@ -20,7 +44,7 @@ https://building.vts.com/blog/2015/11/02/route53-ssl-naked-domain-redirect/
 Steps:
 1. get new cert:
    ```
-   asp szabi && \
+   asp user-aws-profile && \
    AWS_ACCESS_KEY_ID=`aws configure get aws_access_key_id` \
    AWS_SECRET_ACCESS_KEY=`aws configure get aws_secret_access_key` \
    acme.sh --issue -d '*.mynalabel.com' -d mynalabel.com --dns dns_aws
@@ -44,7 +68,8 @@ Steps:
      --certificate-chain file:///home/szabi/.acme.sh/\*.mynalabel.com/ca.cer \
      --path /cloudfront/myna/
    ```
-4. change CloudFront to use the new cert via the web ui - `https://console.aws.amazon.com/cloudfront/v3/home?#/distributions/E3QL6B6GNJEOCC`
+4. change CloudFront to use the new cert via the web ui -
+   `https://console.aws.amazon.com/cloudfront/v3/home?#/distributions/E3QL6B6GNJ3OCC`
 
 ## TypeORM migrations
 
